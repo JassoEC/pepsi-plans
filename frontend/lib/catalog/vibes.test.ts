@@ -37,7 +37,7 @@ describe("getActiveVibes", () => {
     vi.useRealTimers();
   });
 
-  it("returns active Vibes within their validity window in catalog order", async () => {
+  it("returns active Vibes in catalog order", async () => {
     const vibes = [
       {
         id: "vibe-1",
