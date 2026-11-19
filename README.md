@@ -160,15 +160,18 @@ This is a proposal, not a claim that these technologies are already implemented.
 
 | Entity | Responsibility |
 |---|---|
-| `rooms` | Room identifier, host capability, selected Vibe, state and expiration |
-| `participants` | Temporary participant identity scoped to a room and Boost usage |
+| `users` | Temporary visitor identity, display name and hashed session token |
+| `rooms` | Room identifier, `host_user_id`, selected Vibe, state and expiration |
+| `room_participants` | Membership of a user in a room and room-specific Boost usage |
 | `plans` | Curated Miami experiences and editorial content |
 | `room_plans` | Snapshot of plans selected for a specific room |
 | `votes` | One participant's decision for one plan in one room |
 
 Important constraints:
-- Unique vote per `(room_id, participant_id, plan_id)`.
-- At most one Boost per `(room_id, participant_id)`.
+- Unique room membership per `(room_id, user_id)`.
+- Unique vote per `(room_participant_id, plan_id)`.
+- At most one Boost per room membership (`room_participants.boost_used_at`).
+- `rooms.host_user_id` references the temporary user who created the room.
 - A room's selected deck is immutable after entering `VOTING`.
 - Vote values are represented by a constrained action type; clients never submit a calculated score.
 - The room-specific plan snapshot prevents catalog edits from changing an active room.
@@ -179,14 +182,14 @@ The database is the source of truth. Realtime events notify clients that data ch
 
 Critical vote operations should be transactional:
 1. Validate that the room is accepting votes.
-2. Validate participant membership and that the participant has not voted for that plan.
+2. Validate the user's session token and room membership, and that the membership has not voted for that plan.
 3. Validate Boost availability when the action is a Boost.
 4. Insert the vote and update Boost usage atomically.
 5. Return the persisted result.
 
 This protects against duplicate submissions, concurrent Boost attempts and forged client-side scores.
 
-A browser-stored temporary participant identifier can support identity recovery after refresh, but it must not be treated as authorization by itself. The server must validate its association with the room. A room-scoped participant token or equivalent capability should be considered during implementation.
+When a visitor first enters the app and provides a display name, the server creates a temporary user identity and issues an opaque random session token. The token is stored as a hash in `users`; the raw token is kept in a Secure, HttpOnly, SameSite cookie. The cookie identifies the same temporary user on later visits from that browser. When that user creates a room, `rooms.host_user_id` records the host relationship. When anyone joins a room, a `room_participants` row records membership. The public `room_id` locates a room but does not authorize voting: vote operations also validate the user's session and room membership.
 
 ## 8. Testing strategy
 
@@ -250,7 +253,7 @@ The prototype may use seeded plans and simulated external services. These exclus
 
 For a launch reaching thousands of participants, revisit:
 
-- **Security:** room-scoped capabilities, authorization boundaries, RLS policies, rate limits, abuse prevention and protection against room enumeration.
+- **Security:** temporary-user session tokens, host ownership checks, room membership authorization, RLS policies, rate limits, abuse prevention and protection against room enumeration.
 - **Concurrency:** transactional vote writes, unique constraints, idempotency keys and load tests for simultaneous submissions.
 - **Performance:** indexes for room and vote lookups, efficient aggregate queries, pagination for discovery and appropriate caching for the static plan catalog.
 - **Realtime reliability:** reconnect behavior, missed-event recovery from the database and limits on channel/subscription fan-out.
@@ -262,8 +265,8 @@ Redis, queues or a separate service should be introduced only when measured load
 
 The following should be settled while implementing, based on the repository and the smallest secure design:
 
-- How the host capability is issued and recovered.
-- How temporary participant tokens are generated, stored and validated.
+- How temporary user sessions are issued, expired, rotated and recovered.
+- Whether the host may also participate in voting, or is host-only.
 - Whether room completion is host-triggered, time-triggered or both.
 - The retention window for expired room data.
 - The exact Realtime channel strategy and client recovery behavior.
@@ -276,7 +279,7 @@ The following should be settled while implementing, based on the repository and 
 | End-to-end experience | Host creates and shares a room; participants vote; group gets a result |
 | Natural Pepsi integration | Pepsi Vibes and The Insider editorial curation |
 | Shared state and late arrivals | Room state in PostgreSQL and joinable voting rooms |
-| Refresh and duplicate submissions | Recoverable participant identity and unique vote constraints |
+| Refresh and duplicate submissions | Recoverable temporary user session, room membership and unique vote constraints |
 | Technology and data decisions | Next.js, TypeScript, Supabase and a relational model |
 | Tests | Domain unit tests, integration tests and acceptance criteria |
 | Scaling considerations | Security, concurrency, performance and operational readiness |
