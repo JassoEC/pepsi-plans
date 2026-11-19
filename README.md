@@ -69,7 +69,7 @@ The host creates a moment, chooses its Pepsi Vibe, selects a small set of plans,
 ### Participant flow
 
 1. Open the shared link on a phone.
-2. Join with a temporary, room-scoped identity; no account is required.
+2. Join with a browser-profile-scoped temporary identity; no account is required.
 3. Review the same deck as every other participant.
 4. Vote once on each plan.
 5. Follow group progress and see the final recommendation when voting is complete or the host closes the room.
@@ -82,7 +82,7 @@ Each card contains a plan name and category, image, Miami neighborhood, indicati
 
 ## 4. Pepsi integration: Pepsi Vibes
 
-The host chooses one Vibe for the room. It influences curated recommendations and editorial tone.
+The host chooses one Vibe for the room. Vibes are catalog entities that can be activated, retired or rotated seasonally without changing the schema. In the current MVP, each plan belongs to exactly one Vibe, while each Vibe can curate many plans. A room stores the selected `vibe_id` so its context remains stable.
 
 | Vibe | Direction | Example plan types |
 |---|---|---|
@@ -161,9 +161,10 @@ This is a proposal, not a claim that these technologies are already implemented.
 | Entity | Responsibility |
 |---|---|
 | `users` | Temporary visitor identity, display name and hashed session token |
-| `rooms` | Room identifier, `host_user_id`, selected Vibe, state and expiration |
+| `vibes` | Dynamic Pepsi Vibe catalog, including activation and optional validity dates |
+| `rooms` | Room identifier, `host_user_id`, selected `vibe_id`, state and expiration |
 | `room_participants` | Membership of a user in a room and room-specific Boost usage |
-| `plans` | Curated Miami experiences and editorial content |
+| `plans` | Curated Miami experiences and editorial content; each plan references one `vibe_id` |
 | `room_plans` | Snapshot of plans selected for a specific room |
 | `votes` | One participant's decision for one plan in one room |
 
@@ -172,6 +173,7 @@ Important constraints:
 - Unique vote per `(room_participant_id, plan_id)`.
 - At most one Boost per room membership (`room_participants.boost_used_at`).
 - `rooms.host_user_id` references the temporary user who created the room.
+- Each plan belongs to one Vibe in the MVP; a Vibe can have multiple plans.
 - A room's selected deck is immutable after entering `VOTING`.
 - Vote values are represented by a constrained action type; clients never submit a calculated score.
 - The room-specific plan snapshot prevents catalog edits from changing an active room.
@@ -189,7 +191,7 @@ Critical vote operations should be transactional:
 
 This protects against duplicate submissions, concurrent Boost attempts and forged client-side scores.
 
-When a visitor first enters the app and provides a display name, the server creates a temporary user identity and issues an opaque, cryptographically random token. Only its hash is stored in `users`; the raw token is set in a persistent Secure, HttpOnly, SameSite=Lax cookie with a 30-day lifetime. This is intentionally not a browser-session cookie: closing a tab, browser or shared room link must not discard the identity. On a later visit from the same browser profile, the cookie lets the server recover the same user and their room memberships and votes. The 30-day lifetime is renewed on valid activity; inactive temporary identities can be cleaned up after expiration. If the user clears cookies, uses private browsing or switches devices/browsers, the identity cannot be recovered in this account-free MVP. When that user creates a room, `rooms.host_user_id` records the host relationship. When anyone joins a room, a `room_participants` row records membership. The public `room_id` locates a room but does not authorize voting: vote operations also validate the user's token and room membership.
+When a visitor first enters the app and provides a display name, the server creates a browser-profile-scoped temporary user identity and issues an opaque, cryptographically random token. Only its hash is stored in `users`; the raw token is set in a persistent Secure, HttpOnly, SameSite=Lax cookie with a 30-day lifetime. This is intentionally not a browser-session cookie: closing a tab, browser or shared room link must not discard the identity. On a later visit from the same browser profile, the cookie lets the server recover the same user and their room memberships and votes. The 30-day lifetime is renewed on valid activity; inactive temporary identities can be cleaned up after expiration. If the user clears cookies, uses private browsing or switches devices/browsers, the identity cannot be recovered in this account-free MVP. When that user creates a room, `rooms.host_user_id` records the host relationship. When anyone joins a room, a `room_participants` row records membership. The public `room_id` locates a room but does not authorize voting: vote operations also validate the user's token and room membership.
 
 ## 8. Testing strategy
 
