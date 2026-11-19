@@ -13,16 +13,12 @@ export type Vibe = {
 
 export async function getActiveVibes(): Promise<Vibe[]> {
   const supabase = await createSupabaseServerClient();
-  const now = new Date().toISOString();
-
   const { data, error } = await supabase
     .from("vibes")
     .select(
       "id, name, slug, description, image_key, starts_at, ends_at, sort_order",
     )
     .eq("is_active", true)
-    .or(`starts_at.is.null,starts_at.lte.${now}`)
-    .or(`ends_at.is.null,ends_at.gt.${now}`)
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 
