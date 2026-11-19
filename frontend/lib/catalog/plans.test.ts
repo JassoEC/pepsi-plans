@@ -53,7 +53,8 @@ describe("getActivePlansByVibe", () => {
 
     createSupabaseServerClientMock.mockResolvedValue({ from });
 
-    await expect(getActivePlansByVibe("vibe-1")).resolves.toEqual(plans);
+    const { vibes: _vibes, ...expectedPlan } = plans[0];
+    await expect(getActivePlansByVibe("vibe-1")).resolves.toEqual([expectedPlan]);
 
     expect(from).toHaveBeenCalledWith("plans");
     expect(query.select).toHaveBeenCalledWith(
