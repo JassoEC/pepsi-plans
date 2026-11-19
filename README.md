@@ -82,7 +82,7 @@ Each card contains a plan name and category, image, Miami neighborhood, indicati
 
 ## 4. Pepsi integration: Pepsi Vibes
 
-The host chooses one Vibe for the room. It influences curated recommendations and editorial tone.
+The host chooses one Vibe for the room. Vibes are catalog entities that can be activated, retired or rotated seasonally without changing the schema. In the current MVP, each plan belongs to exactly one Vibe, while each Vibe can curate many plans. A room stores the selected `vibe_id` so its context remains stable.
 
 | Vibe | Direction | Example plan types |
 |---|---|---|
@@ -161,9 +161,10 @@ This is a proposal, not a claim that these technologies are already implemented.
 | Entity | Responsibility |
 |---|---|
 | `users` | Temporary visitor identity, display name and hashed session token |
-| `rooms` | Room identifier, `host_user_id`, selected Vibe, state and expiration |
+| `vibes` | Dynamic Pepsi Vibe catalog, including activation and optional validity dates |
+| `rooms` | Room identifier, `host_user_id`, selected `vibe_id`, state and expiration |
 | `room_participants` | Membership of a user in a room and room-specific Boost usage |
-| `plans` | Curated Miami experiences and editorial content |
+| `plans` | Curated Miami experiences and editorial content; each plan references one `vibe_id` |
 | `room_plans` | Snapshot of plans selected for a specific room |
 | `votes` | One participant's decision for one plan in one room |
 
@@ -172,6 +173,7 @@ Important constraints:
 - Unique vote per `(room_participant_id, plan_id)`.
 - At most one Boost per room membership (`room_participants.boost_used_at`).
 - `rooms.host_user_id` references the temporary user who created the room.
+- Each plan belongs to one Vibe in the MVP; a Vibe can have multiple plans.
 - A room's selected deck is immutable after entering `VOTING`.
 - Vote values are represented by a constrained action type; clients never submit a calculated score.
 - The room-specific plan snapshot prevents catalog edits from changing an active room.
