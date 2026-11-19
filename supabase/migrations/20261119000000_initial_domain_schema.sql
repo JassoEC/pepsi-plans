@@ -34,10 +34,7 @@ create table public.rooms (
   expires_at timestamptz not null,
   completed_at timestamptz,
   constraint rooms_completed_at_matches_status
-    check (
-      (status = 'completed' and completed_at is not null)
-      or (status <> 'completed' and completed_at is null)
-    )
+    check (status <> 'completed' or completed_at is not null)
 );
 
 create table public.room_participants (
