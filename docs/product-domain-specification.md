@@ -42,14 +42,16 @@ A room in `VOTING` accepts new participants and votes until it reaches `COMPLETE
 
 ## 5. Participant and identity rules
 
-- A participant joins one room using its shareable URL.
-- A participant is represented by a temporary room-scoped identity.
-- Refresh and reconnect should recover that identity and retrieve persisted votes.
-- Identity stored in browser storage is a recovery hint, not authorization by itself.
-- Server-side operations validate the user's session and room membership.
+- Every visitor enters a display name and receives a temporary user identity, whether they create a room or join one.
+- The identity is browser-profile scoped, not room scoped. The same user can host one room and participate in others.
+- The server generates an opaque, cryptographically random token. Only its hash is stored in `users`; the raw token is set in a persistent `Secure`, `HttpOnly`, `SameSite=Lax` cookie.
+- The cookie has a 30-day lifetime and is renewed on valid activity. It must survive closing a tab, browser or shared room link.
+- On return from the same browser profile, the server resolves the token to the same user and restores their room memberships and persisted votes.
+- If cookies are cleared, private browsing is used, or the user switches browser/device, the temporary identity cannot be recovered in this MVP. Cross-device recovery would require an additional mechanism, such as a recovery code or optional account, and is out of scope.
+- Server-side operations validate the user's token. Host-only operations additionally verify `rooms.host_user_id`; voting additionally verifies room membership.
 - A late participant may join only while the room is in `VOTING`.
 
-The prototype should avoid collecting names, emails or other unnecessary personal data. A display alias can be generated locally if the UI needs one.
+The display name is only a presentation field, not an authentication factor. Avoid collecting emails or other unnecessary personal data.
 
 ## 6. Vote rules
 
@@ -110,9 +112,10 @@ Client behavior:
 ### users
 - `id`
 - `name` — display name supplied by the visitor; not an authentication factor
-- `session_token_hash` — hash of the opaque temporary session token
+- `session_token_hash` — hash of the opaque temporary identity token
 - `created_at`
-- `expires_at` — optional session/user expiration policy
+- `last_seen_at` — updated after valid activity
+- `expires_at` — temporary identity expiration, extended on valid activity
 
 ### rooms
 - `id`
@@ -161,7 +164,7 @@ Unique constraint: `(room_id, plan_id)`.
 
 Unique constraint: `(room_participant_id, plan_id)`. The room is derived through the room membership, avoiding mismatched room/user references.
 
-The temporary user is global to the browser session rather than recreated for each room. A user may be the host of one room and a participant in another. The room membership stores room-specific state such as Boost usage. The host does not automatically become a voter; whether the host also joins as a participant is an explicit product behavior to settle before implementation. This is a conceptual model, not a committed migration. Exact columns, token storage, session expiration and RLS policies should be designed alongside the first implementation.
+The temporary user is stable across browser restarts in the same browser profile, rather than recreated for each tab or room. A user may be the host of one room and a participant in another. The room membership stores room-specific state such as Boost usage. The host does not automatically become a voter; whether the host also joins as a participant is an explicit product behavior to settle before implementation. The 30-day inactivity expiration is a proposed MVP policy. This is a conceptual model, not a committed migration. Exact columns, token rotation and RLS policies should be designed alongside the first implementation.
 
 ## 10. Important edge cases
 
@@ -184,7 +187,7 @@ The temporary user is global to the browser session rather than recreated for ea
 
 For a production launch, review:
 - Unpredictable room identifiers and protection against enumeration.
-- Secure temporary-user session tokens, hashed token storage, cookie security and session expiration.
+- Persistent temporary-user identity across browser restarts, hashed token storage, cookie security, token renewal and inactivity expiration.
 - Host authorization by checking `rooms.host_user_id` against the authenticated temporary user.
 - Vote authorization by checking room membership; knowing a `room_id` alone is insufficient.
 - Narrow server-side authorization for every mutation.
@@ -206,7 +209,7 @@ For a production launch, review:
 
 ### Integration
 - Room creation and deck snapshot.
-- Temporary user creation from a submitted display name and session recovery after refresh.
+- Temporary user creation from a submitted display name and identity recovery after closing/reopening the browser.
 - Host authorization through `rooms.host_user_id`.
 - Participant join and late join through `room_participants`.
 - Vote rejection for a visitor who knows the room ID but has not joined or has no valid session.
