@@ -45,6 +45,7 @@ describe("getActivePlansByVibe", () => {
         image_key: null,
         short_insight: "A little friendly competition",
         description: null,
+        vibes: { id: "vibe-1" },
       },
     ];
     const query = createQueryBuilder({ data: plans, error: null });
@@ -56,7 +57,7 @@ describe("getActivePlansByVibe", () => {
 
     expect(from).toHaveBeenCalledWith("plans");
     expect(query.select).toHaveBeenCalledWith(
-      "id, vibe_id, title, category, neighborhood, budget_label, image_key, short_insight, description",
+      "id, vibe_id, title, category, neighborhood, budget_label, image_key, short_insight, description, vibes!inner(id)",
     );
     expect(query.eq).toHaveBeenNthCalledWith(1, "vibe_id", "vibe-1");
     expect(query.eq).toHaveBeenNthCalledWith(2, "is_active", true);
