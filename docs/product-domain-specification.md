@@ -14,7 +14,7 @@ Help a group of friends in Miami choose a plan together without a long message t
 | Participant | Join an eligible room, inspect the deck, vote once per plan and view the outcome |
 | System | Validate state transitions, persist votes, enforce Boost limits, calculate results and expire rooms |
 
-No full user account is required in the prototype. Host and participant capabilities must be scoped to a room and validated on the server.
+No full user account is required. Every visitor enters a display name and receives a temporary user identity backed by an opaque session token. The same temporary user may create rooms and join other rooms. Host ownership is represented by `rooms.host_user_id`; participant access is represented by a `room_participants` membership. The public room ID locates a room but does not, by itself, authorize voting.
 
 ## 3. Room state machine
 
@@ -23,7 +23,7 @@ No full user account is required in the prototype. Host and participant capabili
 | From | To | Trigger | Validation |
 |---|---|---|---|
 | DRAFT | READY | Host finishes deck | Vibe selected; 2–10 unique plans selected |
-| READY | VOTING | Host starts voting | Host capability valid; deck snapshot persisted |
+| READY | VOTING | Host starts voting | Authenticated temporary user is the room host; deck snapshot persisted |
 | VOTING | COMPLETED | Host closes voting or configured completion rule runs | Room still accepting votes |
 | DRAFT / READY / VOTING / COMPLETED | EXPIRED | Expiration policy | Expiration timestamp reached |
 
@@ -46,7 +46,7 @@ A room in `VOTING` accepts new participants and votes until it reaches `COMPLETE
 - A participant is represented by a temporary room-scoped identity.
 - Refresh and reconnect should recover that identity and retrieve persisted votes.
 - Identity stored in browser storage is a recovery hint, not authorization by itself.
-- Server-side operations validate the participant's room membership and capability.
+- Server-side operations validate the user's session and room membership.
 - A late participant may join only while the room is in `VOTING`.
 
 The prototype should avoid collecting names, emails or other unnecessary personal data. A display alias can be generated locally if the UI needs one.
@@ -73,7 +73,7 @@ Rules:
 - No vote editing or rewind is supported in the first version.
 
 Recommended database protections:
-- Unique constraint on `(room_id, participant_id, plan_id)`.
+- Unique constraint on `(room_id, room_participant_id, plan_id)`.
 - A participant-room Boost usage record or equivalent database constraint.
 - Transactional server operation for vote insertion and Boost consumption.
 
@@ -107,21 +107,30 @@ Client behavior:
 
 ## 9. Suggested conceptual schema
 
+### users
+- `id`
+- `name` — display name supplied by the visitor; not an authentication factor
+- `session_token_hash` — hash of the opaque temporary session token
+- `created_at`
+- `expires_at` — optional session/user expiration policy
+
 ### rooms
 - `id`
-- `host_token_hash` or equivalent host capability reference
+- `host_user_id` — foreign key to `users.id`
 - `vibe`
 - `status`
 - `created_at`
 - `expires_at`
 - `completed_at`
 
-### participants
+### room_participants
 - `id`
 - `room_id`
-- `token_hash` or equivalent capability reference
+- `user_id`
 - `boost_used_at`
 - `joined_at`
+
+Unique constraint: `(room_id, user_id)`.
 
 ### plans
 - `id`
@@ -145,15 +154,14 @@ Unique constraint: `(room_id, plan_id)`.
 
 ### votes
 - `id`
-- `room_id`
-- `participant_id`
+- `room_room_participant_id`
 - `plan_id`
 - `action`
 - `created_at`
 
-Unique constraint: `(room_id, participant_id, plan_id)`.
+Unique constraint: `(room_room_participant_id, plan_id)`. The room is derived through the room membership, avoiding mismatched room/user references.
 
-This is a conceptual model, not a committed migration. Exact columns, foreign keys, token storage and RLS policies should be designed alongside the first implementation.
+The temporary user is global to the browser session rather than recreated for each room. A user may be the host of one room and a participant in another. The room membership stores room-specific state such as Boost usage. The host does not automatically become a voter; whether the host also joins as a participant is an explicit product behavior to settle before implementation. This is a conceptual model, not a committed migration. Exact columns, token storage, session expiration and RLS policies should be designed alongside the first implementation.
 
 ## 10. Important edge cases
 
@@ -176,7 +184,9 @@ This is a conceptual model, not a committed migration. Exact columns, foreign ke
 
 For a production launch, review:
 - Unpredictable room identifiers and protection against enumeration.
-- Host and participant capabilities with secure token generation and hashed token storage.
+- Secure temporary-user session tokens, hashed token storage, cookie security and session expiration.
+- Host authorization by checking `rooms.host_user_id` against the authenticated temporary user.
+- Vote authorization by checking room membership; knowing a `room_id` alone is insufficient.
 - Narrow server-side authorization for every mutation.
 - RLS policies and service-role key handling.
 - Rate limits for room creation, joining and voting.
@@ -196,9 +206,10 @@ For a production launch, review:
 
 ### Integration
 - Room creation and deck snapshot.
-- Host authorization before and after voting starts.
-- Participant join and late join.
-- Identity recovery after refresh.
+- Temporary user creation from a submitted display name and session recovery after refresh.
+- Host authorization through `rooms.host_user_id`.
+- Participant join and late join through `room_participants`.
+- Vote rejection for a visitor who knows the room ID but has not joined or has no valid session.
 - Vote persistence and duplicate rejection.
 - Concurrent Boost requests.
 - Realtime notification followed by state reconciliation.
