@@ -189,7 +189,7 @@ Critical vote operations should be transactional:
 
 This protects against duplicate submissions, concurrent Boost attempts and forged client-side scores.
 
-When a visitor first enters the app and provides a display name, the server creates a temporary user identity and issues an opaque random session token. The token is stored as a hash in `users`; the raw token is kept in a Secure, HttpOnly, SameSite cookie. The cookie identifies the same temporary user on later visits from that browser. When that user creates a room, `rooms.host_user_id` records the host relationship. When anyone joins a room, a `room_participants` row records membership. The public `room_id` locates a room but does not authorize voting: vote operations also validate the user's session and room membership.
+When a visitor first enters the app and provides a display name, the server creates a temporary user identity and issues an opaque, cryptographically random token. Only its hash is stored in `users`; the raw token is set in a persistent Secure, HttpOnly, SameSite=Lax cookie with a 30-day lifetime. This is intentionally not a browser-session cookie: closing a tab, browser or shared room link must not discard the identity. On a later visit from the same browser profile, the cookie lets the server recover the same user and their room memberships and votes. The 30-day lifetime is renewed on valid activity; inactive temporary identities can be cleaned up after expiration. If the user clears cookies, uses private browsing or switches devices/browsers, the identity cannot be recovered in this account-free MVP. When that user creates a room, `rooms.host_user_id` records the host relationship. When anyone joins a room, a `room_participants` row records membership. The public `room_id` locates a room but does not authorize voting: vote operations also validate the user's token and room membership.
 
 ## 8. Testing strategy
 
@@ -205,7 +205,7 @@ When a visitor first enters the app and provides a display name, the server crea
 ### Integration tests
 
 - Create a room and join using its shared URL.
-- Recover participant identity after refresh.
+- Recover the same temporary user and their votes after closing and reopening the browser or shared link.
 - Submit a vote and verify it is persisted.
 - Attempt duplicate votes.
 - Attempt concurrent Boost submissions.
@@ -265,7 +265,7 @@ Redis, queues or a separate service should be introduced only when measured load
 
 The following should be settled while implementing, based on the repository and the smallest secure design:
 
-- How temporary user sessions are issued, expired, rotated and recovered.
+- Whether temporary identities should support multiple browsers/devices in a later version.
 - Whether the host may also participate in voting, or is host-only.
 - Whether room completion is host-triggered, time-triggered or both.
 - The retention window for expired room data.
