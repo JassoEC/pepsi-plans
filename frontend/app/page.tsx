@@ -4,11 +4,7 @@ import { getActivePlansByVibe } from "@/lib/catalog/plans";
 import { getActiveVibes } from "@/lib/catalog/vibes";
 import PlanDiscovery from "@/components/discovery/plan-discovery";
 
-type HomeProps = {
-  searchParams: Promise<{ vibe?: string | string[] }>;
-};
-
-export default async function Home({ searchParams }: HomeProps) {
+export default async function Home({ searchParams }: PageProps<"/">) {
   const [{ vibe: vibeParam }, vibes] = await Promise.all([
     searchParams,
     getActiveVibes(),
