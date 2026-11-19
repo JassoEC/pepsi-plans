@@ -22,7 +22,7 @@ export async function getActivePlansByVibe(vibeId: string): Promise<Plan[]> {
   const { data, error } = await supabase
     .from("plans")
     .select(
-      "id, vibe_id, title, category, neighborhood, budget_label, image_key, short_insight, description",
+      "id, vibe_id, title, category, neighborhood, budget_label, image_key, short_insight, description, vibes!inner(id)",
     )
     .eq("vibe_id", vibeId)
     .eq("is_active", true)
@@ -32,5 +32,5 @@ export async function getActivePlansByVibe(vibeId: string): Promise<Plan[]> {
     throw error;
   }
 
-  return (data ?? []) as Plan[];
+  return (data ?? []).map(({ vibes: _vibe, ...plan }) => plan as Plan);
 }
