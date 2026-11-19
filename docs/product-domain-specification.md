@@ -73,7 +73,7 @@ Rules:
 - No vote editing or rewind is supported in the first version.
 
 Recommended database protections:
-- Unique constraint on `(room_id, room_participant_id, plan_id)`.
+- Unique constraint on `(room_participant_id, plan_id)`.
 - A participant-room Boost usage record or equivalent database constraint.
 - Transactional server operation for vote insertion and Boost consumption.
 
@@ -154,12 +154,12 @@ Unique constraint: `(room_id, plan_id)`.
 
 ### votes
 - `id`
-- `room_room_participant_id`
+- `room_participant_id`
 - `plan_id`
 - `action`
 - `created_at`
 
-Unique constraint: `(room_room_participant_id, plan_id)`. The room is derived through the room membership, avoiding mismatched room/user references.
+Unique constraint: `(room_participant_id, plan_id)`. The room is derived through the room membership, avoiding mismatched room/user references.
 
 The temporary user is global to the browser session rather than recreated for each room. A user may be the host of one room and a participant in another. The room membership stores room-specific state such as Boost usage. The host does not automatically become a voter; whether the host also joins as a participant is an explicit product behavior to settle before implementation. This is a conceptual model, not a committed migration. Exact columns, token storage, session expiration and RLS policies should be designed alongside the first implementation.
 
