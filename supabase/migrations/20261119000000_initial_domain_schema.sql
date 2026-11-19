@@ -28,7 +28,22 @@ create table public.users (
 create table public.vibes (
   id uuid primary key default gen_random_uuid(),
   name text not null check (char_length(btrim(name)) between 1 and 60),
-  slug text not null unique check (slug ~ '^[a-z0-9]+(?:-[a-z0-9]+)*
+  slug text not null unique check (slug ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'),
+  description text,
+  image_key text,
+  is_active boolean not null default true,
+  starts_at timestamptz,
+  ends_at timestamptz,
+  sort_order smallint not null default 0,
+  created_at timestamptz not null default now(),
+  constraint vibes_validity_window
+    check (ends_at is null or starts_at is null or ends_at > starts_at)
+);
+
+create table public.rooms (
+  id uuid primary key default gen_random_uuid(),
+  host_user_id uuid not null references public.users(id) on delete restrict,
+  vibe_id uuid not null references public.vibes(id) on delete restrict,
   status public.room_status not null default 'draft',
   created_at timestamptz not null default now(),
   expires_at timestamptz not null,
