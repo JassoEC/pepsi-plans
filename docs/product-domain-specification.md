@@ -112,7 +112,7 @@ Client behavior:
 ### users
 - `id`
 - `name` — display name supplied by the visitor; not an authentication factor
-- `session_token_hash` — hash of the opaque temporary identity token
+- `identity_token_hash` — hash of the opaque temporary identity token
 - `created_at`
 - `last_seen_at` — updated after valid activity
 - `expires_at` — temporary identity expiration, extended on valid activity
