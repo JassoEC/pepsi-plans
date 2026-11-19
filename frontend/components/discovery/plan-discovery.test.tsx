@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 
+import "@testing-library/jest-dom/vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
@@ -56,7 +57,7 @@ describe("PlanDiscovery", () => {
     fireEvent.click(screen.getByRole("button", { name: /show 1 more plans/i }));
 
     for (let index = 1; index <= 10; index += 1) {
-      fireEvent.click(screen.getByRole("button", { name: new RegExp(`Plan ${index}`, "i") }));
+      fireEvent.click(screen.getByRole("button", { name: new RegExp(`Plan ${index} A good time together`, "i") }));
     }
 
     expect(screen.getByText("10 of 10 selected")).toBeTruthy();
