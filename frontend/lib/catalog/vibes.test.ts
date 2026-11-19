@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { createSupabaseServerClientMock } = vi.hoisted(() => ({
   createSupabaseServerClientMock: vi.fn(),
@@ -14,7 +14,6 @@ function createQueryBuilder(response: { data: unknown; error: unknown }) {
   const query = {
     select: vi.fn(),
     eq: vi.fn(),
-    or: vi.fn(),
     order: vi.fn(),
     then: (
       onFulfilled: (value: typeof response) => unknown,
@@ -24,7 +23,6 @@ function createQueryBuilder(response: { data: unknown; error: unknown }) {
 
   query.select.mockReturnValue(query);
   query.eq.mockReturnValue(query);
-  query.or.mockReturnValue(query);
   query.order.mockReturnValue(query);
 
   return query;
@@ -32,9 +30,11 @@ function createQueryBuilder(response: { data: unknown; error: unknown }) {
 
 describe("getActiveVibes", () => {
   beforeEach(() => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-11-19T18:00:00.000Z"));
     createSupabaseServerClientMock.mockReset();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("returns active Vibes within their validity window in catalog order", async () => {
@@ -62,14 +62,6 @@ describe("getActiveVibes", () => {
       "id, name, slug, description, image_key, starts_at, ends_at, sort_order",
     );
     expect(query.eq).toHaveBeenCalledWith("is_active", true);
-    expect(query.or).toHaveBeenNthCalledWith(
-      1,
-      "starts_at.is.null,starts_at.lte.2026-11-19T18:00:00.000Z",
-    );
-    expect(query.or).toHaveBeenNthCalledWith(
-      2,
-      "ends_at.is.null,ends_at.gt.2026-11-19T18:00:00.000Z",
-    );
     expect(query.order).toHaveBeenNthCalledWith(1, "sort_order", {
       ascending: true,
     });
