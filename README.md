@@ -69,7 +69,7 @@ The host creates a moment, chooses its Pepsi Vibe, selects a small set of plans,
 ### Participant flow
 
 1. Open the shared link on a phone.
-2. Join with a temporary, room-scoped identity; no account is required.
+2. Join with a browser-profile-scoped temporary identity; no account is required.
 3. Review the same deck as every other participant.
 4. Vote once on each plan.
 5. Follow group progress and see the final recommendation when voting is complete or the host closes the room.
@@ -189,7 +189,7 @@ Critical vote operations should be transactional:
 
 This protects against duplicate submissions, concurrent Boost attempts and forged client-side scores.
 
-When a visitor first enters the app and provides a display name, the server creates a temporary user identity and issues an opaque, cryptographically random token. Only its hash is stored in `users`; the raw token is set in a persistent Secure, HttpOnly, SameSite=Lax cookie with a 30-day lifetime. This is intentionally not a browser-session cookie: closing a tab, browser or shared room link must not discard the identity. On a later visit from the same browser profile, the cookie lets the server recover the same user and their room memberships and votes. The 30-day lifetime is renewed on valid activity; inactive temporary identities can be cleaned up after expiration. If the user clears cookies, uses private browsing or switches devices/browsers, the identity cannot be recovered in this account-free MVP. When that user creates a room, `rooms.host_user_id` records the host relationship. When anyone joins a room, a `room_participants` row records membership. The public `room_id` locates a room but does not authorize voting: vote operations also validate the user's token and room membership.
+When a visitor first enters the app and provides a display name, the server creates a browser-profile-scoped temporary user identity and issues an opaque, cryptographically random token. Only its hash is stored in `users`; the raw token is set in a persistent Secure, HttpOnly, SameSite=Lax cookie with a 30-day lifetime. This is intentionally not a browser-session cookie: closing a tab, browser or shared room link must not discard the identity. On a later visit from the same browser profile, the cookie lets the server recover the same user and their room memberships and votes. The 30-day lifetime is renewed on valid activity; inactive temporary identities can be cleaned up after expiration. If the user clears cookies, uses private browsing or switches devices/browsers, the identity cannot be recovered in this account-free MVP. When that user creates a room, `rooms.host_user_id` records the host relationship. When anyone joins a room, a `room_participants` row records membership. The public `room_id` locates a room but does not authorize voting: vote operations also validate the user's token and room membership.
 
 ## 8. Testing strategy
 
