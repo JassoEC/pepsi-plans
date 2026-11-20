@@ -27,6 +27,7 @@ export async function getMorePlans(vibeId: string, offset: number) {
 const createMomentSchema = z.object({
   vibeId: z.string().uuid(),
   planIds: z.array(z.string().uuid()).min(2).max(10),
+  title: z.string().trim().min(3).max(60),
   expiresAt: z.string().datetime({ offset: true }),
 }).refine(({ planIds }) => new Set(planIds).size === planIds.length, {
   message: "Selected plans must be unique.",
@@ -36,9 +37,10 @@ const createMomentSchema = z.object({
 export async function createMoment(
   vibeId: string,
   planIds: string[],
+  title: string,
   expiresAt: string,
 ) {
-  const parsed = createMomentSchema.safeParse({ vibeId, planIds, expiresAt });
+  const parsed = createMomentSchema.safeParse({ vibeId, planIds, title, expiresAt });
   if (!parsed.success) {
     return { ok: false as const, error: "Choose between 2 and 10 different plans before creating your Moment." };
   }
@@ -60,6 +62,7 @@ export async function createMoment(
     p_token: token,
     p_vibe_id: parsed.data.vibeId,
     p_plan_ids: parsed.data.planIds,
+    p_title: parsed.data.title,
     p_expires_at: parsed.data.expiresAt,
   });
 
