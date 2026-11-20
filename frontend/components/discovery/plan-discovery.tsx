@@ -283,9 +283,6 @@ export default function PlanDiscovery({
                 ? "Your deck is full"
                 : "Looking good. Keep exploring or continue."}
           </p>
-          <p className="mt-0.5 text-xs text-slate-500">
-            No account needed to explore and build your shortlist.
-          </p>
         </div>
         <button
           type="button"
