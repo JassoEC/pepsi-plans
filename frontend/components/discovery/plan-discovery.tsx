@@ -136,7 +136,7 @@ export default function PlanDiscovery({
           {momentTitle.trim()}
         </h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-600">
-          Your Moment is ready. Share this link with your friends so they can join you.
+          Your Moment is ready. Share this invitation link with your friends.
         </p>
         <div className="mt-7 text-left">
           <label htmlFor="moment-invite-link" className="text-sm font-bold text-slate-800">
@@ -156,7 +156,7 @@ export default function PlanDiscovery({
           onClick={handleCopyInviteLink}
           className="mt-4 w-full rounded-full bg-[#005CB4] px-7 py-4 text-sm font-extrabold text-white shadow-md shadow-blue-900/15 transition hover:bg-[#004A91] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4]"
         >
-          {linkCopied ? "Link copied!" : "Copy and share the link"}
+          {linkCopied ? "Link copied!" : "Copy and share the invitation link"}
         </button>
         <p className="mt-3 min-h-5 text-sm text-emerald-700" role="status" aria-live="polite">
           {linkCopied ? "Your invite link is ready to share." : ""}
