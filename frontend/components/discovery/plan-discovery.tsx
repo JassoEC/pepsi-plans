@@ -83,6 +83,13 @@ export default function PlanDiscovery({
     setActivePlan(null);
   }
 
+  function handleRemoveFromDeck(planId: string) {
+    setSelectedPlanIds((current) => {
+      if (current.length <= MIN_SELECTED_PLANS) return current;
+      return current.filter((id) => id !== planId);
+    });
+  }
+
   if (showDeck) {
     return (
       <div className="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
@@ -107,22 +114,39 @@ export default function PlanDiscovery({
           </button>
         </div>
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          {selectedPlans.map((plan, index) => (
-            <div key={plan.id} className="flex gap-3 rounded-2xl bg-slate-50 p-4">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-extrabold text-[#005CB4]">
-                {index + 1}
-              </span>
-              <div className="min-w-0">
-                <p className="font-bold text-slate-900">{plan.title}</p>
-                <p className="mt-1 text-xs text-slate-500">
-                  {[plan.neighborhood, plan.budget_label].filter(Boolean).join(" · ")}
-                </p>
+          {selectedPlans.map((plan, index) => {
+            const canRemove = selectedPlans.length > MIN_SELECTED_PLANS;
+
+            return (
+              <div key={plan.id} className="flex items-center gap-3 rounded-2xl bg-slate-50 p-4">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-extrabold text-[#005CB4]">
+                  {index + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold text-slate-900">{plan.title}</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {[plan.neighborhood, plan.budget_label].filter(Boolean).join(" · ")}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveFromDeck(plan.id)}
+                  disabled={!canRemove}
+                  aria-label={canRemove ? `Remove ${plan.title} from shortlist` : `At least ${MIN_SELECTED_PLANS} plans are required`}
+                  title={canRemove ? "Remove from shortlist" : `Keep at least ${MIN_SELECTED_PLANS} plans`}
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-lg font-semibold text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4] disabled:cursor-not-allowed disabled:opacity-35"
+                >
+                  <span aria-hidden="true">×</span>
+                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <p className="mt-6 rounded-xl bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-900">
           These are the ideas you want to bring to your group. Next, you’ll be able to create and share a room.
+        </p>
+        <p className="mt-2 text-xs text-slate-400">
+          You need at least {MIN_SELECTED_PLANS} plans in your shortlist. Remove a plan only while you have more than {MIN_SELECTED_PLANS}.
         </p>
       </div>
     );
