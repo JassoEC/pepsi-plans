@@ -1,5 +1,7 @@
 "use server";
 
+import { randomBytes } from "node:crypto";
+
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -57,12 +59,14 @@ export async function createMoment(
     return { ok: false as const, error: "Create a nickname on the home page before creating a Moment." };
   }
 
+  const inviteToken = randomBytes(32).toString("base64url");
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.rpc("create_guest_moment", {
     p_token: token,
     p_vibe_id: parsed.data.vibeId,
     p_plan_ids: parsed.data.planIds,
     p_title: parsed.data.title,
+    p_invite_token: inviteToken,
     p_expires_at: parsed.data.expiresAt,
   });
 
@@ -71,5 +75,5 @@ export async function createMoment(
   }
 
   revalidatePath("/");
-  return { ok: true as const, roomId: data };
+  return { ok: true as const, roomId: data, inviteToken };
 }
