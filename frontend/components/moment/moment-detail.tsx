@@ -109,7 +109,7 @@ export default function MomentDetail({ moment }: { moment: Moment }) {
           {isOpen ? (
             <Link href={`/moment/${moment.id}/vote`} className="rounded-full bg-[#005CB4] px-6 py-3 text-sm font-extrabold text-white transition hover:bg-[#004A91]">Add my votes</Link>
           ) : null}
-          {moment.is_host ? (
+          {moment.is_host && getStatus(moment) !== "Expired" ? (
             <button type="button" onClick={handleShare} className="rounded-full border border-[#005CB4] bg-white px-6 py-3 text-sm font-extrabold text-[#005CB4] transition hover:bg-blue-50">Copy invitation link</button>
           ) : null}
         </div>
