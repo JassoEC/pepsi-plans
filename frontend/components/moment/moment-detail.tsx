@@ -116,7 +116,14 @@ export default function MomentDetail({ moment }: { moment: Moment }) {
         <div className="mt-5 overflow-hidden rounded-3xl bg-[#071B3A] p-6 text-white sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-200">{moment.vibe_name}</p>
-            <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold text-white">{statusLabels[moment.status]}</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold text-white">{statusLabels[moment.status]}</span>
+              {moment.is_host && moment.status === "voting" ? (
+                <button type="button" onClick={handleCloseVoting} disabled={isPending} className="rounded-full border border-white/30 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-white/10 disabled:opacity-50">
+                  {isPending ? "Closing..." : "Close voting"}
+                </button>
+              ) : null}
+            </div>
           </div>
           <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">{moment.title}</h1>
           <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-blue-100">
@@ -210,12 +217,7 @@ export default function MomentDetail({ moment }: { moment: Moment }) {
           </div>
         </div>
 
-        {moment.is_host && moment.status === "voting" ? (
-          <div className="mt-8 border-t border-slate-200 pt-5">
-            <p className="text-sm text-slate-500">Ready to wrap things up? You can close voting once everyone has had a chance.</p>
-            <button type="button" onClick={handleCloseVoting} disabled={isPending} className="mt-3 rounded-full border border-slate-300 px-5 py-2.5 text-sm font-bold text-slate-700 hover:border-slate-500 disabled:opacity-50">{isPending ? "Closing..." : "Close voting"}</button>
-          </div>
-        ) : null}
+
       </section>
 
       <footer className="mt-auto pt-5 text-center text-xs text-slate-400">Good moments. Better together.</footer>
