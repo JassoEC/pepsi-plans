@@ -95,9 +95,6 @@ export default function PlanDiscovery({ plans }: PlanDiscoveryProps) {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
         <div>
           <p className="text-sm font-bold text-slate-900">Choose your plans</p>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Pick at least {MIN_SELECTED_PLANS} and up to {MAX_SELECTED_PLANS}.
-          </p>
         </div>
         <p className="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-extrabold tabular-nums text-[#005CB4]" aria-live="polite">
           {selectedPlanIds.length} of {MAX_SELECTED_PLANS} selected
