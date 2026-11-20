@@ -10,9 +10,9 @@ import type { GuestDashboard, GuestRoom } from "@/lib/guest-identity";
 type Props = { dashboard: GuestDashboard | null };
 
 const statusCopy: Record<GuestRoom["status"], string> = {
-  draft: "Draft",
-  ready: "Waiting",
-  voting: "Voting",
+  draft: "Open",
+  ready: "Open",
+  voting: "Open",
   completed: "Completed",
   expired: "Expired",
 };
@@ -95,9 +95,14 @@ function RoomSection({ title, rooms, empty }: { title: string; rooms: GuestRoom[
                 </div>
                 <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{statusCopy[room.status]}</span>
               </div>
-              <div className="mt-3 flex items-center justify-between gap-3">
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                 <p className="text-xs text-slate-400">{new Date(room.created_at).toLocaleDateString()}</p>
-                <Link href={`/moment/${room.id}`} className="rounded-full bg-[#005CB4] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#004A91]">Open Moment</Link>
+                <div className="flex flex-wrap gap-2">
+                  <Link href={`/moment/${room.id}`} className="rounded-full border border-[#005CB4] px-4 py-2 text-xs font-bold text-[#005CB4] transition hover:bg-blue-50">View and share</Link>
+                  {room.status !== "completed" && room.status !== "expired" ? (
+                    <Link href={`/moment/${room.id}/vote`} className="rounded-full bg-[#005CB4] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#004A91]">Add my votes</Link>
+                  ) : null}
+                </div>
               </div>
             </article>
           ))}
