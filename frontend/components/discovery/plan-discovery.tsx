@@ -96,7 +96,7 @@ export default function PlanDiscovery({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#005CB4]">
-              Deck selected
+              Your shortlist
             </p>
             <h3 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-950">
               Your shortlist is ready.
@@ -280,7 +280,7 @@ export default function PlanDiscovery({
             {selectedPlanIds.length < MIN_SELECTED_PLANS
               ? `Choose ${MIN_SELECTED_PLANS - selectedPlanIds.length} more to continue`
               : selectedPlanIds.length === MAX_SELECTED_PLANS
-                ? "Your deck is full"
+                ? "Your shortlist is full"
                 : "Looking good. Keep exploring or continue."}
           </p>
           <p className="mt-0.5 text-xs text-slate-500">
