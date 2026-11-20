@@ -44,7 +44,6 @@ const statusLabels: Record<Moment["status"], string> = {
 };
 
 export default function MomentDetail({ moment }: { moment: Moment }) {
-  const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pendingPlanId, setPendingPlanId] = useState<string | null>(null);
@@ -60,12 +59,11 @@ export default function MomentDetail({ moment }: { moment: Moment }) {
     }
 
     const url = `${window.location.origin}/m/${result.inviteToken}`;
-    setInviteUrl(url);
     try {
       await navigator.clipboard.writeText(url);
-      setFeedback("Invitation link copied. Send it to your friends.");
+      setFeedback("Invitation link copied.");
     } catch {
-      setFeedback("Copy the invitation link below to share it.");
+      setFeedback("Couldn't copy the invitation link. Please try again.");
     }
   }
 
@@ -174,13 +172,7 @@ export default function MomentDetail({ moment }: { moment: Moment }) {
           <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">This Moment has expired.</div>
         ) : null}
 
-        {inviteUrl ? (
-          <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
-            <label htmlFor="moment-invite" className="text-sm font-bold text-slate-800">Invitation link</label>
-            <input id="moment-invite" readOnly value={inviteUrl} onFocus={(event) => event.currentTarget.select()} className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-700" />
-            {feedback ? <p role="status" className="mt-2 text-sm text-emerald-700">{feedback}</p> : null}
-          </div>
-        ) : null}
+        {feedback ? <p role="status" className="mt-3 text-sm font-semibold text-emerald-700">{feedback}</p> : null}
 
         {error ? <p role="alert" className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
 
