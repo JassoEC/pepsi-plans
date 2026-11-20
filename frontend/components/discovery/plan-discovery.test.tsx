@@ -1,0 +1,124 @@
+// @vitest-environment jsdom
+
+import "@testing-library/jest-dom/vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { getMorePlans } from "@/app/actions";
+import PlanDiscovery from "./plan-discovery";
+import type { Plan } from "@/lib/catalog/plans";
+
+vi.mock("@/app/actions", () => ({
+  getMorePlans: vi.fn(),
+}));
+
+const mockedGetMorePlans = vi.mocked(getMorePlans);
+
+function makePlans(count: number, startAt = 1): Plan[] {
+  return Array.from({ length: count }, (_, index) => ({
+    id: `plan-${startAt + index}`,
+    vibe_id: "20000000-0000-4000-8000-000000000001",
+    title: `Plan ${startAt + index}`,
+    category: "outdoors",
+    neighborhood: "Miami",
+    budget_label: "$$",
+    image_key: null,
+    short_insight: "A good time together",
+    description: null,
+  }));
+}
+
+describe("PlanDiscovery", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("loads the next batch from the server and preserves the current selection", async () => {
+    mockedGetMorePlans.mockResolvedValue({
+      plans: makePlans(3, 6),
+      hasMore: false,
+    });
+
+    render(
+      <PlanDiscovery
+        vibeId="20000000-0000-4000-8000-000000000001"
+        initialPlans={makePlans(5)}
+        initialHasMore
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /plan 1/i }));
+    fireEvent.click(screen.getByRole("button", { name: /get more suggestions/i }));
+
+    expect(mockedGetMorePlans).toHaveBeenCalledWith(
+      "20000000-0000-4000-8000-000000000001",
+      5,
+    );
+
+    await screen.findByRole("button", { name: /plan 8/i });
+    expect(screen.getByText("1 of 10 selected")).toBeInTheDocument();
+    expect(screen.getByText("You've seen all the ideas for this Vibe.")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /plan 6/i }));
+    fireEvent.click(screen.getByRole("button", { name: /review 2 plans/i }));
+
+    expect(screen.getByText("Your shortlist is ready.")).toBeInTheDocument();
+    expect(screen.getByText("Plan 1")).toBeInTheDocument();
+    expect(screen.getByText("Plan 6")).toBeInTheDocument();
+  });
+
+  it("shows a retry message when loading another batch fails", async () => {
+    mockedGetMorePlans.mockRejectedValue(new Error("Network error"));
+
+    render(
+      <PlanDiscovery
+        vibeId="20000000-0000-4000-8000-000000000001"
+        initialPlans={makePlans(5)}
+        initialHasMore
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /get more suggestions/i }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "We couldn't load more ideas. Please try again.",
+    );
+    expect(screen.getByRole("button", { name: /get more suggestions/i })).toBeEnabled();
+  });
+
+  it("requires at least two plans before continuing", () => {
+    render(
+      <PlanDiscovery
+        vibeId="20000000-0000-4000-8000-000000000001"
+        initialPlans={makePlans(3)}
+        initialHasMore={false}
+      />,
+    );
+
+    const continueButton = screen.getByRole("button", { name: /review 0 plans/i });
+    expect(continueButton).toBeDisabled();
+
+    fireEvent.click(screen.getByRole("button", { name: /plan 1/i }));
+    expect(screen.getByRole("button", { name: /review 1 plans/i })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole("button", { name: /plan 2/i }));
+    expect(screen.getByRole("button", { name: /review 2 plans/i })).toBeEnabled();
+  });
+
+  it("prevents selecting more than ten plans", () => {
+    render(
+      <PlanDiscovery
+        vibeId="20000000-0000-4000-8000-000000000001"
+        initialPlans={makePlans(11)}
+        initialHasMore={false}
+      />,
+    );
+
+    for (let index = 1; index <= 10; index += 1) {
+      fireEvent.click(screen.getByRole("button", { name: new RegExp(`Plan ${index} A good time together`, "i") }));
+    }
+
+    expect(screen.getByText("10 of 10 selected")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /plan 11/i })).toBeDisabled();
+  });
+});

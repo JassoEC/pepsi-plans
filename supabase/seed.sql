@@ -5,7 +5,7 @@ insert into public.vibes (id, name, slug, description, sort_order) values
   ('20000000-0000-4000-8000-000000000003', 'Pepsi Wild Cherry', 'pepsi-wild-cherry', 'Expressive, social and unexpected experiences.', 3)
 on conflict (id) do nothing;
 
--- Small local catalog for development and UI integration.
+-- Local catalog with enough plans to exercise server-side pagination.
 -- Each plan belongs to exactly one Vibe in the current MVP.
 insert into public.plans (
   id, vibe_id, title, category, neighborhood, budget_label, short_insight, description
@@ -17,5 +17,15 @@ insert into public.plans (
   ('10000000-0000-4000-8000-000000000005', '20000000-0000-4000-8000-000000000003', 'Arcade night with the group', 'entertainment', 'Downtown Miami', '$$', 'A little friendly competition', 'Meet for arcade games, shared snacks and a few rounds of group challenges.'),
   ('10000000-0000-4000-8000-000000000006', '20000000-0000-4000-8000-000000000002', 'Beach volleyball at Lummus Park', 'outdoors', 'South Beach', '$', 'Move around and meet by the beach', 'Bring a ball or find an open court for a casual game near the sand.'),
   ('10000000-0000-4000-8000-000000000007', '20000000-0000-4000-8000-000000000003', 'Live music in the Design District', 'nightlife', 'Design District', '$$', 'Discover a new sound together', 'Find a live music event and make an evening of exploring the neighborhood.'),
-  ('10000000-0000-4000-8000-000000000008', '20000000-0000-4000-8000-000000000003', 'Board games and bites', 'food', 'Brickell', '$$', 'Easygoing plans for a close-knit group', 'Choose a board game cafe or casual spot and settle in for a few rounds.')
+  ('10000000-0000-4000-8000-000000000008', '20000000-0000-4000-8000-000000000003', 'Board games and bites', 'food', 'Brickell', '$$', 'Easygoing plans for a close-knit group', 'Choose a board game cafe or casual spot and settle in for a few rounds.'),
+  ('10000000-0000-4000-8000-000000000009', '20000000-0000-4000-8000-000000000001', 'Outdoor movie night at SoundScape Park', 'entertainment', 'Miami Beach', '$', 'A relaxed movie night under the stars', 'Bring a blanket and enjoy an outdoor film screening together.'),
+  ('10000000-0000-4000-8000-000000000010', '20000000-0000-4000-8000-000000000001', 'Cuban coffee and dominoes', 'culture', 'Little Havana', '$', 'A classic neighborhood hangout', 'Meet for Cuban coffee and a friendly game of dominoes.'),
+  ('10000000-0000-4000-8000-000000000011', '20000000-0000-4000-8000-000000000001', 'Dinner by the Miami River', 'food', 'Downtown Miami', '$$', 'Good food with a waterfront backdrop', 'Pick a casual riverside restaurant and catch up over dinner.'),
+  ('10000000-0000-4000-8000-000000000012', '20000000-0000-4000-8000-000000000002', 'Bike ride along the Venetian Causeway', 'outdoors', 'Miami Beach', '$', 'Take in the bay at your own pace', 'Rent bikes and ride across the causeway for open-water views.'),
+  ('10000000-0000-4000-8000-000000000013', '20000000-0000-4000-8000-000000000002', 'Explore the trails at Matheson Hammock', 'outdoors', 'Coral Gables', '$', 'A nature break close to the city', 'Walk the waterfront trails and explore the tropical landscape.'),
+  ('10000000-0000-4000-8000-000000000014', '20000000-0000-4000-8000-000000000002', 'Paddleboard on Biscayne Bay', 'outdoors', 'Key Biscayne', '$$', 'Get moving out on the water', 'Try a beginner-friendly paddleboarding session on the bay.'),
+  ('10000000-0000-4000-8000-000000000015', '20000000-0000-4000-8000-000000000002', 'Street art photo challenge', 'culture', 'Wynwood', '$', 'Turn a neighborhood walk into a game', 'Explore murals in small teams and see who captures the best photos.'),
+  ('10000000-0000-4000-8000-000000000016', '20000000-0000-4000-8000-000000000003', 'Karaoke night with friends', 'nightlife', 'Brickell', '$$', 'Pick the songs everyone knows', 'Find a karaoke spot and take turns choosing the next group anthem.'),
+  ('10000000-0000-4000-8000-000000000017', '20000000-0000-4000-8000-000000000003', 'Late-night dessert crawl', 'food', 'South Beach', '$$', 'Make dessert the main event', 'Visit a couple of dessert spots and share something sweet at each stop.'),
+  ('10000000-0000-4000-8000-000000000018', '20000000-0000-4000-8000-000000000003', 'Sunset salsa social', 'nightlife', 'Little Havana', '$', 'Music and movement after golden hour', 'Find an open salsa social and enjoy the music together.')
 on conflict (id) do nothing;
