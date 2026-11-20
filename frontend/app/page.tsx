@@ -73,34 +73,6 @@ async function DiscoveryContent({
         </span>
       </header>
 
-      <nav aria-label="Your plan journey" className="mx-auto mt-7 w-full max-w-sm">
-        <ol className="flex items-center gap-3">
-          <li className="flex flex-1 items-center gap-2">
-            <span className="flex size-7 items-center justify-center rounded-full bg-[#005CB4] text-xs font-bold text-white">
-              1
-            </span>
-            <span
-              className={`text-xs font-bold ${selectedVibe ? "text-slate-400" : "text-slate-950"}`}
-            >
-              Choose a Vibe
-            </span>
-          </li>
-          <span aria-hidden="true" className="h-px flex-1 bg-slate-200" />
-          <li className="flex flex-1 items-center justify-end gap-2">
-            <span
-              className={`text-xs font-bold ${selectedVibe ? "text-slate-950" : "text-slate-400"}`}
-            >
-              Choose your plans
-            </span>
-            <span
-              className={`flex size-7 items-center justify-center rounded-full text-xs font-bold ${selectedVibe ? "bg-[#005CB4] text-white" : "bg-slate-200 text-slate-500"}`}
-            >
-              2
-            </span>
-          </li>
-        </ol>
-      </nav>
-
       {!selectedVibe ? (
         <section
           key="vibe-step"
@@ -108,18 +80,17 @@ async function DiscoveryContent({
           aria-labelledby="vibe-heading"
         >
           <div className="mb-7 text-center">
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#005CB4]">
-              Destapa tus planes
-            </p>
             <h1
               id="vibe-heading"
               className="text-4xl font-black leading-[1.05] tracking-tight text-slate-950 sm:text-5xl"
             >
-              What are you in the mood for?
+              Choose a Vibe
             </h1>
-            <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-slate-500">
-              Pick the Vibe that feels right today. We’ll bring you a shortlist
-              of plans that fit.
+            <p className="mx-auto mt-3 text-base font-medium leading-6 text-slate-500 sm:text-lg">
+              What are you in the mood for?
+            </p>
+            <p className="mt-2 text-xs font-medium text-slate-400">
+              Pick the Vibe that feels right today.
             </p>
           </div>
 
@@ -237,15 +208,17 @@ function DiscoveryLoading() {
         </span>
       </header>
 
-      <div className="mx-auto mt-7 w-full max-w-sm">
-        <div className="h-7 animate-pulse rounded-full bg-slate-100" />
-      </div>
       <section className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center py-8">
         <div className="mb-7 text-center">
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#005CB4]">
-            Destapa tus planes
+          <h1 className="text-4xl font-black leading-[1.05] tracking-tight text-slate-950 sm:text-5xl">
+            Choose a Vibe
+          </h1>
+          <p className="mx-auto mt-3 text-base font-medium leading-6 text-slate-500 sm:text-lg">
+            What are you in the mood for?
           </p>
-          <p className="text-sm font-semibold text-slate-500">Loading your Vibes…</p>
+          <p className="mt-2 text-xs font-medium text-slate-400">
+            Pick the Vibe that feels right today.
+          </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
           {Array.from({ length: 3 }, (_, index) => (
