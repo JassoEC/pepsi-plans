@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import { getMorePlans } from "@/app/actions";
 import {
   isPlanSelectionValid,
   MAX_SELECTED_PLANS,
@@ -10,24 +11,54 @@ import {
 } from "@/lib/selection/plan-selection";
 import type { Plan } from "@/lib/catalog/plans";
 
-const BATCH_SIZE = 5;
-
 type PlanDiscoveryProps = {
-  plans: Plan[];
+  vibeId: string;
+  initialPlans: Plan[];
+  initialHasMore: boolean;
 };
 
-export default function PlanDiscovery({ plans }: PlanDiscoveryProps) {
+export default function PlanDiscovery({
+  vibeId,
+  initialPlans,
+  initialHasMore,
+}: PlanDiscoveryProps) {
+  const [plans, setPlans] = useState(initialPlans);
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedPlanIds, setSelectedPlanIds] = useState<string[]>([]);
-  const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
   const [showDeck, setShowDeck] = useState(false);
+  const [hasRequestedMore, setHasRequestedMore] = useState(false);
 
-  const visiblePlans = plans.slice(0, visibleCount);
   const selectedPlans = useMemo(
     () => plans.filter((plan) => selectedPlanIds.includes(plan.id)),
     [plans, selectedPlanIds],
   );
   const selectionIsValid = isPlanSelectionValid(selectedPlanIds);
-  const hasMorePlans = visibleCount < plans.length;
+
+  async function handleGetMoreSuggestions() {
+    if (isLoadingMore || !hasMore) return;
+
+    setIsLoadingMore(true);
+    setLoadError(null);
+
+    try {
+      const nextPage = await getMorePlans(vibeId, plans.length);
+      setPlans((current) => {
+        const existingIds = new Set(current.map((plan) => plan.id));
+        return [
+          ...current,
+          ...nextPage.plans.filter((plan) => !existingIds.has(plan.id)),
+        ];
+      });
+      setHasMore(nextPage.hasMore);
+      setHasRequestedMore(true);
+    } catch {
+      setLoadError("We couldn't load more ideas. Please try again.");
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }
 
   function handleToggle(planId: string) {
     setShowDeck(false);
@@ -93,16 +124,17 @@ export default function PlanDiscovery({ plans }: PlanDiscoveryProps) {
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
-        <div>
-          <p className="text-sm font-bold text-slate-900">Choose your plans</p>
-        </div>
-        <p className="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-extrabold tabular-nums text-[#005CB4]" aria-live="polite">
+        <p className="text-sm font-bold text-slate-900">Choose your plans</p>
+        <p
+          className="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-extrabold tabular-nums text-[#005CB4]"
+          aria-live="polite"
+        >
           {selectedPlanIds.length} of {MAX_SELECTED_PLANS} selected
         </p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        {visiblePlans.map((plan) => {
+        {plans.map((plan) => {
           const isSelected = selectedPlanIds.includes(plan.id);
           const isAtLimit = selectedPlanIds.length >= MAX_SELECTED_PLANS;
           const isDisabled = !isSelected && isAtLimit;
@@ -126,11 +158,13 @@ export default function PlanDiscovery({ plans }: PlanDiscoveryProps) {
                 <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
                   {plan.category}
                 </span>
-                <span className={`flex size-7 items-center justify-center rounded-full border text-xs font-bold transition ${
-                  isSelected
-                    ? "border-[#005CB4] bg-[#005CB4] text-white"
-                    : "border-slate-300 text-transparent group-hover:border-[#005CB4]"
-                }`}>
+                <span
+                  className={`flex size-7 items-center justify-center rounded-full border text-xs font-bold transition ${
+                    isSelected
+                      ? "border-[#005CB4] bg-[#005CB4] text-white"
+                      : "border-slate-300 text-transparent group-hover:border-[#005CB4]"
+                  }`}
+                >
                   ✓
                 </span>
               </span>
@@ -152,17 +186,36 @@ export default function PlanDiscovery({ plans }: PlanDiscoveryProps) {
         })}
       </div>
 
-      {hasMorePlans ? (
-        <div className="mt-5 text-center">
+      {hasMore ? (
+        <div className="mt-6 rounded-2xl border border-blue-100 bg-white px-5 py-5 text-center">
+          <p className="text-sm font-bold text-slate-900">That's all for now.</p>
+          <p className="mt-1 text-sm text-slate-500">Want more ideas?</p>
           <button
             type="button"
-            onClick={() => setVisibleCount((count) => Math.min(count + BATCH_SIZE, plans.length))}
-            className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:border-[#005CB4] hover:text-[#005CB4]"
+            onClick={handleGetMoreSuggestions}
+            disabled={isLoadingMore}
+            className="mt-4 rounded-full bg-[#005CB4] px-6 py-3 text-sm font-extrabold text-white transition hover:bg-[#004A91] disabled:cursor-wait disabled:opacity-60"
           >
-            Show {Math.min(BATCH_SIZE, plans.length - visibleCount)} more plans
+            {isLoadingMore ? "Finding more ideas..." : "Get more suggestions"}
           </button>
+          {loadError ? (
+            <p className="mt-3 text-sm font-medium text-red-600" role="alert">
+              {loadError}
+            </p>
+          ) : null}
         </div>
-      ) : null}
+      ) : (
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 px-5 py-5 text-center">
+          <p className="text-sm font-bold text-slate-900">
+            {hasRequestedMore ? "You've seen all the ideas for this Vibe." : "That's all for now."}
+          </p>
+          <p className="mt-1 text-sm text-slate-500">
+            {hasRequestedMore
+              ? "Try another Vibe to explore a different kind of plan."
+              : "You've reached the end of this Vibe's suggestions."}
+          </p>
+        </div>
+      )}
 
       <div className="sticky bottom-0 z-10 mt-8 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_12px_40px_rgba(15,23,42,0.12)] backdrop-blur sm:bottom-3 sm:flex-row sm:items-center sm:justify-between sm:pb-4">
         <div>
