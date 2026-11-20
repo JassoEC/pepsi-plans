@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 
-import { getMorePlans } from "@/app/actions";
+import { createMoment, getMorePlans } from "@/app/actions";
 import {
   isPlanSelectionValid,
   MAX_SELECTED_PLANS,
@@ -31,6 +33,9 @@ export default function PlanDiscovery({
   const [showDeck, setShowDeck] = useState(false);
   const [hasRequestedMore, setHasRequestedMore] = useState(false);
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [isCreating, startCreating] = useTransition();
+  const router = useRouter();
 
   const selectedPlans = useMemo(
     () => plans.filter((plan) => selectedPlanIds.includes(plan.id)),
@@ -81,6 +86,20 @@ export default function PlanDiscovery({
   function handleToggle(planId: string) {
     setSelectedPlanIds((current) => togglePlanSelection(current, planId));
     setActivePlan(null);
+  }
+
+  function handleCreateMoment() {
+    setCreateError(null);
+    startCreating(async () => {
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      const result = await createMoment(vibeId, selectedPlanIds, expiresAt);
+      if (!result.ok) {
+        setCreateError(result.error);
+        return;
+      }
+      router.push("/");
+      router.refresh();
+    });
   }
 
   function handleRemoveFromDeck(planId: string) {
@@ -143,11 +162,27 @@ export default function PlanDiscovery({
           })}
         </div>
         <p className="mt-6 rounded-xl bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-900">
-          These are the ideas you want to bring to your group. Next, you’ll be able to create and share a room.
+          These are the ideas you want to bring to your group. Create your Moment to save them and invite your friends.
         </p>
         <p className="mt-2 text-xs text-slate-400">
           Keep at least {MIN_SELECTED_PLANS} plans selected. You can remove a plan when you've selected more than {MIN_SELECTED_PLANS}.
         </p>
+        {createError ? (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+            <p>{createError}</p>
+            {createError.includes("nickname") ? (
+              <Link href="/" className="mt-2 inline-block font-bold underline">Set up your nickname</Link>
+            ) : null}
+          </div>
+        ) : null}
+        <button
+          type="button"
+          onClick={handleCreateMoment}
+          disabled={isCreating || !selectionIsValid}
+          className="mt-5 w-full rounded-full bg-[#005CB4] px-7 py-4 text-sm font-extrabold text-white shadow-md shadow-blue-900/15 transition hover:bg-[#004A91] disabled:cursor-wait disabled:bg-slate-300 disabled:shadow-none"
+        >
+          {isCreating ? "Creating your Moment..." : "Create Moment"}
+        </button>
       </div>
     );
   }
