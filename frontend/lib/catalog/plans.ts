@@ -1,5 +1,7 @@
 import { createSupabaseServerClient } from "../supabase/server";
 
+export const PLAN_BATCH_SIZE = 5;
+
 export type Plan = {
   id: string;
   vibe_id: string;
@@ -12,13 +14,26 @@ export type Plan = {
   description: string | null;
 };
 
-export async function getActivePlansByVibe(vibeId: string): Promise<Plan[]> {
+export type PlansPage = {
+  plans: Plan[];
+  hasMore: boolean;
+};
+
+export async function getActivePlansPageByVibe(
+  vibeId: string,
+  offset = 0,
+): Promise<PlansPage> {
   if (!vibeId.trim()) {
     throw new Error("A Vibe ID is required to fetch plans.");
   }
 
+  if (!Number.isSafeInteger(offset) || offset < 0) {
+    throw new Error("A valid plan offset is required.");
+  }
+
   const supabase = await createSupabaseServerClient();
 
+  // Fetch one extra row to determine whether another batch is available.
   const { data, error } = await supabase
     .from("plans")
     .select(
@@ -26,11 +41,18 @@ export async function getActivePlansByVibe(vibeId: string): Promise<Plan[]> {
     )
     .eq("vibe_id", vibeId)
     .eq("is_active", true)
-    .order("title", { ascending: true });
+    .order("title", { ascending: true })
+    .order("id", { ascending: true })
+    .range(offset, offset + PLAN_BATCH_SIZE);
 
   if (error) {
     throw error;
   }
 
-  return (data ?? []).map(({ vibes: _vibe, ...plan }) => plan as Plan);
+  const rows = (data ?? []).map(({ vibes: _vibe, ...plan }) => plan as Plan);
+
+  return {
+    plans: rows.slice(0, PLAN_BATCH_SIZE),
+    hasMore: rows.length > PLAN_BATCH_SIZE,
+  };
 }
