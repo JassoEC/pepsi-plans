@@ -41,9 +41,9 @@ export default function GuestHome({ dashboard }: Props) {
       <section className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-12">
         <div className="mb-8 text-center">
           <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-[#005CB4] text-2xl font-black italic text-white">P</span>
-          <p className="mt-6 text-xs font-extrabold uppercase tracking-[0.2em] text-[#005CB4]">Pepsi Plans</p>
-          <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950">Good plans start with you.</h1>
-          <p className="mt-3 text-sm leading-6 text-slate-500">Choose a nickname to keep your rooms together. No account or password needed.</p>
+          <p className="mt-6 text-xs font-extrabold uppercase tracking-[0.2em] text-[#005CB4]">Pepsi Moments</p>
+          <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950">Make this moment yours.</h1>
+          <p className="mt-3 text-sm leading-6 text-slate-500">Pick a name your friends will recognize. No account or password needed.</p>
         </div>
         <form onSubmit={handleSubmit} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
           <label htmlFor="nickname" className="text-sm font-bold text-slate-800">Your nickname</label>
@@ -62,13 +62,13 @@ export default function GuestHome({ dashboard }: Props) {
         <div>
           <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#005CB4]">Your space</p>
           <h1 className="mt-2 text-4xl font-black tracking-tight text-slate-950">Hey, {dashboard.user.name}.</h1>
-          <p className="mt-2 text-sm text-slate-500">Pick up a plan or bring everyone together.</p>
+          <p className="mt-2 text-sm text-slate-500">Bring your people together and make something happen.</p>
         </div>
-        <Link href="/?discover=1" className="inline-flex items-center justify-center rounded-full bg-[#005CB4] px-6 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#004A91]">+ Create a new room</Link>
+        <Link href="/create" className="inline-flex items-center justify-center rounded-full bg-[#005CB4] px-6 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#004A91]">+ Create a Moment</Link>
       </div>
       <div className="mt-10 grid gap-8 md:grid-cols-2">
-        <RoomSection title="Hosted by you" rooms={dashboard.hosted} empty="Rooms you create will show up here." />
-        <RoomSection title="Joined" rooms={dashboard.joined} empty="Rooms you join through an invitation will show up here." />
+        <RoomSection title="Your Moments" rooms={dashboard.hosted} empty="No Moments yet. Bring your friends together and make one happen." />
+        <RoomSection title="Moments you have joined" rooms={dashboard.joined} empty="No invitations yet. When you join a friends Moment, you will find it here." />
       </div>
     </section>
   );
