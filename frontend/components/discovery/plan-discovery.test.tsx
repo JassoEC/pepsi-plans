@@ -40,14 +40,14 @@ describe("PlanDiscovery", () => {
   it("requires at least two plans before continuing", () => {
     render(<PlanDiscovery plans={makePlans(3)} />);
 
-    const continueButton = screen.getByRole("button", { name: /continue with 0/i });
+    const continueButton = screen.getByRole("button", { name: /review 0 plans/i });
     expect(continueButton).toBeDisabled();
 
     fireEvent.click(screen.getByRole("button", { name: /plan 1/i }));
-    expect(screen.getByRole("button", { name: /continue with 1/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /review 1 plans/i })).toBeDisabled();
 
     fireEvent.click(screen.getByRole("button", { name: /plan 2/i }));
-    expect(screen.getByRole("button", { name: /continue with 2/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /review 2 plans/i })).toBeEnabled();
   });
 
   it("prevents selecting more than ten plans", () => {
