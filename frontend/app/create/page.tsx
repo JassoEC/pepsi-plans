@@ -56,7 +56,7 @@ async function DiscoveryContent({
             P
           </span>
           <span className="text-lg font-extrabold tracking-tight text-slate-950">
-            Pepsi <span className="text-[#005CB4]">Vibes</span>
+            Pepsi <span className="text-[#005CB4]">Moments</span>
           </span>
         </Link>
         <span className="rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-slate-500">
@@ -126,9 +126,6 @@ async function DiscoveryContent({
               No Vibes are available right now. Please check back soon.
             </div>
           )}
-          <p className="mt-7 text-center text-xs text-slate-400">
-            No sign-up. Just find a plan that feels right.
-          </p>
         </section>
       ) : (
         <section
@@ -162,7 +159,7 @@ async function DiscoveryContent({
       )}
 
       <footer className="mt-auto pt-5 text-center text-xs text-slate-400">
-        Good plans. Better together.
+        Good moments. Better together.
       </footer>
     </main>
   );
