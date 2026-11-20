@@ -99,7 +99,6 @@ export default function MomentDetail({ moment }: { moment: Moment }) {
   }
 
   const canVote = moment.status === "voting" && !moment.has_voted;
-  const showShare = moment.is_host && (moment.status !== "voting" || moment.has_voted);
 
   return (
     <main className="mx-auto flex min-h-[100svh] w-full max-w-4xl flex-1 flex-col px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-5 sm:px-8 sm:pt-8">
