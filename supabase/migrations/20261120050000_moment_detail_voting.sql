@@ -29,14 +29,18 @@ begin
 
   if not found then return null; end if;
 
-  select r, rp
-    into target_room, target_participant
-    from public.rooms r
-    join public.room_participants rp on rp.room_id = r.id
-   where r.id = p_room_id
-     and rp.user_id = guest.id
-     and r.expires_at > now()
-     and r.status <> 'expired';
+  select * into target_room
+    from public.rooms
+   where id = p_room_id
+     and expires_at > now()
+     and status <> 'expired';
+
+  if not found then return null; end if;
+
+  select * into target_participant
+    from public.room_participants
+   where room_id = target_room.id
+     and user_id = guest.id;
 
   if not found then return null; end if;
 
