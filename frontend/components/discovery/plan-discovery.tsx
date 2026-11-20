@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { getMorePlans } from "@/app/actions";
 import {
@@ -29,12 +29,29 @@ export default function PlanDiscovery({
   const [selectedPlanIds, setSelectedPlanIds] = useState<string[]>([]);
   const [showDeck, setShowDeck] = useState(false);
   const [hasRequestedMore, setHasRequestedMore] = useState(false);
+  const [activePlan, setActivePlan] = useState<Plan | null>(null);
 
   const selectedPlans = useMemo(
     () => plans.filter((plan) => selectedPlanIds.includes(plan.id)),
     [plans, selectedPlanIds],
   );
   const selectionIsValid = isPlanSelectionValid(selectedPlanIds);
+
+  useEffect(() => {
+    if (!activePlan) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setActivePlan(null);
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [activePlan]);
 
   async function handleGetMoreSuggestions() {
     if (isLoadingMore || !hasMore) return;
@@ -61,8 +78,8 @@ export default function PlanDiscovery({
   }
 
   function handleToggle(planId: string) {
-    setShowDeck(false);
     setSelectedPlanIds((current) => togglePlanSelection(current, planId));
+    setActivePlan(null);
   }
 
   if (showDeck) {
@@ -140,48 +157,53 @@ export default function PlanDiscovery({
           const isDisabled = !isSelected && isAtLimit;
 
           return (
-            <button
+            <article
               key={plan.id}
-              type="button"
-              aria-pressed={isSelected}
-              disabled={isDisabled}
-              onClick={() => handleToggle(plan.id)}
-              className={`group relative flex min-h-48 flex-col rounded-2xl border p-5 text-left transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4] ${
+              className={`relative flex min-h-48 flex-col rounded-2xl border p-5 transition-all ${
                 isSelected
                   ? "border-[#005CB4] bg-blue-50/80 ring-2 ring-[#005CB4]/15"
-                  : isDisabled
-                    ? "cursor-not-allowed border-slate-100 bg-slate-50 opacity-50"
-                    : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
+                  : "border-slate-200 bg-white"
               }`}
             >
-              <span className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between gap-3">
                 <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
                   {plan.category}
                 </span>
-                <span
-                  className={`flex size-7 items-center justify-center rounded-full border text-xs font-bold transition ${
-                    isSelected
-                      ? "border-[#005CB4] bg-[#005CB4] text-white"
-                      : "border-slate-300 text-transparent group-hover:border-[#005CB4]"
-                  }`}
-                >
-                  ✓
-                </span>
-              </span>
-              <span className="mt-5 block text-lg font-extrabold leading-snug tracking-tight text-slate-950">
+                {isSelected ? (
+                  <span className="flex size-7 items-center justify-center rounded-full border border-[#005CB4] bg-[#005CB4] text-xs font-bold text-white" aria-label="Selected">
+                    ✓
+                  </span>
+                ) : null}
+              </div>
+              <h3 className="mt-5 text-lg font-extrabold leading-snug tracking-tight text-slate-950">
                 {plan.title}
-              </span>
+              </h3>
               {plan.short_insight ? (
-                <span className="mt-1.5 block text-sm leading-5 text-slate-500">
+                <p className="mt-1.5 text-sm leading-5 text-slate-600">
                   {plan.short_insight}
-                </span>
+                </p>
               ) : null}
-              <span className="mt-auto flex flex-wrap gap-x-2 gap-y-1 pt-5 text-xs font-semibold text-slate-400">
-                {plan.neighborhood ? <span>{plan.neighborhood}</span> : null}
-                {plan.neighborhood && plan.budget_label ? <span>·</span> : null}
-                {plan.budget_label ? <span>{plan.budget_label}</span> : null}
-              </span>
-            </button>
+              <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5">
+                <p className="flex flex-wrap gap-x-2 gap-y-1 text-xs font-semibold text-slate-400">
+                  {plan.neighborhood ? <span>{plan.neighborhood}</span> : null}
+                  {plan.neighborhood && plan.budget_label ? <span>·</span> : null}
+                  {plan.budget_label ? <span>{plan.budget_label}</span> : null}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setActivePlan(plan)}
+                  aria-label={`Explore ${plan.title}`}
+                  className="rounded-full px-3 py-2 text-xs font-extrabold text-[#005CB4] transition hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4]"
+                >
+                  Explore details <span aria-hidden="true">↗</span>
+                </button>
+              </div>
+              {isDisabled ? (
+                <p className="mt-2 text-xs font-medium text-slate-400">
+                  Your shortlist is full.
+                </p>
+              ) : null}
+            </article>
           );
         })}
       </div>
@@ -239,6 +261,106 @@ export default function PlanDiscovery({
           Review {selectedPlanIds.length} plans
         </button>
       </div>
+
+      {activePlan ? (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/55 backdrop-blur-[2px] sm:items-center sm:p-6"
+          onClick={() => setActivePlan(null)}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="plan-detail-title"
+            className="max-h-[92dvh] w-full max-w-xl overflow-y-auto rounded-t-[2rem] bg-white shadow-2xl sm:rounded-[2rem]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="sticky top-0 z-10 flex items-center justify-center bg-white/95 px-5 pb-2 pt-3 backdrop-blur sm:rounded-t-[2rem]">
+              <span className="h-1.5 w-12 rounded-full bg-slate-200" />
+              <button
+                type="button"
+                onClick={() => setActivePlan(null)}
+                aria-label="Close plan details"
+                className="absolute right-4 top-3 flex size-9 items-center justify-center rounded-full bg-slate-100 text-lg text-slate-600 hover:bg-slate-200"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="px-5 pb-7 sm:px-7">
+              {activePlan.image_key?.startsWith("https://") ||
+              activePlan.image_key?.startsWith("http://") ? (
+                <img
+                  src={activePlan.image_key}
+                  alt={activePlan.title}
+                  className="mb-6 h-52 w-full rounded-2xl object-cover"
+                />
+              ) : (
+                <div className="mb-6 flex h-44 items-end rounded-2xl bg-gradient-to-br from-[#071B3A] via-[#005CB4] to-[#42A5E8] p-5 text-white">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-100">
+                      Pepsi Vibes · Miami
+                    </p>
+                    <p className="mt-1 text-2xl font-black tracking-tight">
+                      {activePlan.category}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#005CB4]">
+                  {activePlan.category}
+                </span>
+                {activePlan.budget_label ? (
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+                    {activePlan.budget_label}
+                  </span>
+                ) : null}
+              </div>
+              <h2 id="plan-detail-title" className="mt-3 text-2xl font-black leading-tight tracking-tight text-slate-950">
+                {activePlan.title}
+              </h2>
+              {activePlan.neighborhood ? (
+                <p className="mt-2 text-sm font-semibold text-slate-500">
+                  {activePlan.neighborhood}, Miami
+                </p>
+              ) : null}
+
+              {activePlan.short_insight ? (
+                <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/70 p-4">
+                  <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#005CB4]">
+                    The Pepsi Vibe
+                  </p>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-slate-800">
+                    {activePlan.short_insight}
+                  </p>
+                </div>
+              ) : null}
+
+              <div className="mt-6">
+                <h3 className="text-sm font-extrabold text-slate-900">The plan</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  {activePlan.description ?? activePlan.short_insight ?? "A chance to make a new memory together."}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                disabled={selectedPlanIds.length >= MAX_SELECTED_PLANS && !selectedPlanIds.includes(activePlan.id)}
+                onClick={() => handleToggle(activePlan.id)}
+                className="mt-7 w-full rounded-full bg-[#005CB4] px-6 py-4 text-sm font-extrabold text-white shadow-lg shadow-blue-900/15 transition hover:bg-[#004A91] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+              >
+                {selectedPlanIds.includes(activePlan.id)
+                  ? "Remove from shortlist"
+                  : "Add to shortlist"}
+              </button>
+              <p className="mt-3 text-center text-xs text-slate-400">
+                Exploring a plan won't add it to your shortlist.
+              </p>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }
