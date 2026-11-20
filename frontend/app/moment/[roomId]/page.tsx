@@ -6,6 +6,8 @@ import MomentDetail from "@/components/moment/moment-detail";
 import { GUEST_COOKIE } from "@/lib/guest-identity";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+export const instant = false;
+
 export default async function MomentPage({
   params,
 }: {
