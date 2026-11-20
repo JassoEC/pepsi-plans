@@ -301,8 +301,7 @@ begin
 
   select * into target_room
     from public.rooms
-   where id = p_room_id
-     and status <> 'expired';
+   where id = p_room_id;
 
   if not found then return null; end if;
 
