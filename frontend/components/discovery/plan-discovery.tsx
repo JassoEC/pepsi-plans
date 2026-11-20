@@ -43,7 +43,7 @@ export default function PlanDiscovery({ plans }: PlanDiscoveryProps) {
               Deck selected
             </p>
             <h3 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-950">
-              This is your shortlist.
+              Your shortlist is ready.
             </h3>
             <p className="mt-1 text-sm text-slate-500">
               {selectedPlans.length} ideas ready for your group.
@@ -73,7 +73,7 @@ export default function PlanDiscovery({ plans }: PlanDiscoveryProps) {
           ))}
         </div>
         <p className="mt-6 rounded-xl bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-900">
-          Your deck is ready. Room creation and sharing will be the next step.
+          These are the ideas you want to bring to your group. Next, you’ll be able to create and share a room.
         </p>
       </div>
     );
@@ -94,7 +94,7 @@ export default function PlanDiscovery({ plans }: PlanDiscoveryProps) {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
         <div>
-          <p className="text-sm font-bold text-slate-900">Your plan deck</p>
+          <p className="text-sm font-bold text-slate-900">Choose your plans</p>
           <p className="mt-0.5 text-xs text-slate-500">
             Pick at least {MIN_SELECTED_PLANS} and up to {MAX_SELECTED_PLANS}.
           </p>
@@ -167,7 +167,7 @@ export default function PlanDiscovery({ plans }: PlanDiscoveryProps) {
         </div>
       ) : null}
 
-      <div className="sticky bottom-3 z-10 mt-8 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-[0_12px_40px_rgba(15,23,42,0.12)] backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+      <div className="sticky bottom-0 z-10 mt-8 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_12px_40px_rgba(15,23,42,0.12)] backdrop-blur sm:bottom-3 sm:flex-row sm:items-center sm:justify-between sm:pb-4">
         <div>
           <p className="text-sm font-bold text-slate-900">
             {selectedPlanIds.length < MIN_SELECTED_PLANS
@@ -177,7 +177,7 @@ export default function PlanDiscovery({ plans }: PlanDiscoveryProps) {
                 : "Looking good. Keep exploring or continue."}
           </p>
           <p className="mt-0.5 text-xs text-slate-500">
-            Your picks stay selected as you explore more plans.
+            No account needed to explore and build your shortlist.
           </p>
         </div>
         <button
@@ -186,7 +186,7 @@ export default function PlanDiscovery({ plans }: PlanDiscoveryProps) {
           onClick={() => setShowDeck(true)}
           className="rounded-full bg-[#005CB4] px-7 py-3 text-sm font-extrabold text-white shadow-md shadow-blue-900/15 transition hover:bg-[#004A91] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
         >
-          Continue with {selectedPlanIds.length}
+          Review {selectedPlanIds.length} plans
         </button>
       </div>
     </div>
