@@ -161,6 +161,13 @@ export default function PlanDiscovery({
         <p className="mt-3 min-h-5 text-sm text-emerald-700" role="status" aria-live="polite">
           {linkCopied ? "Your invite link is ready to share." : ""}
         </p>
+        <Link
+          href="/"
+          className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-slate-500 transition hover:bg-slate-50 hover:text-[#005CB4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4]"
+        >
+          <span aria-hidden="true">←</span>
+          Back to dashboard
+        </Link>
         {copyError ? (
           <p className="mt-2 text-sm text-red-600" role="alert">{copyError}</p>
         ) : null}
