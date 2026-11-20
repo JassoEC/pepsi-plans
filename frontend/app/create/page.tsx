@@ -75,7 +75,7 @@ async function DiscoveryContent({
               id="vibe-heading"
               className="text-4xl font-black leading-[1.05] tracking-tight text-slate-950 sm:text-5xl"
             >
-              Choose a Vibe
+              Choose your vibe
             </h1>
             <p className="mx-auto mt-3 text-base font-medium leading-6 text-slate-500 sm:text-lg">
               What are you in the mood for?
@@ -189,7 +189,7 @@ function DiscoveryLoading() {
       <section className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center py-8">
         <div className="mb-7 text-center">
           <h1 className="text-4xl font-black leading-[1.05] tracking-tight text-slate-950 sm:text-5xl">
-            Choose a Vibe
+            Choose your vibe
           </h1>
           <p className="mx-auto mt-3 text-base font-medium leading-6 text-slate-500 sm:text-lg">
             What are you in the mood for?
