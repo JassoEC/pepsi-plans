@@ -41,6 +41,7 @@ export async function getActivePlansPageByVibe(
     )
     .eq("vibe_id", vibeId)
     .eq("is_active", true)
+    .eq("vibes.is_active", true)
     .order("title", { ascending: true })
     .order("id", { ascending: true })
     .range(offset, offset + PLAN_BATCH_SIZE);
