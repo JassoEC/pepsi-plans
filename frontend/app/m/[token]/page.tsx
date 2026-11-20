@@ -16,6 +16,11 @@ export default async function InvitePage({
   const cookieStore = await cookies();
   const guestToken = cookieStore.get(GUEST_COOKIE)?.value ?? null;
   const supabase = await createSupabaseServerClient();
+  const { data: dashboard } = guestToken
+    ? await supabase.rpc("get_guest_dashboard", { p_token: guestToken })
+    : { data: null };
+  const hasIdentity = Boolean(dashboard);
+
   const { data, error } = await supabase.rpc("get_guest_moment_by_invite_token", {
     p_invite_token: token,
     p_guest_token: guestToken,
@@ -23,5 +28,5 @@ export default async function InvitePage({
 
   if (error || !data) notFound();
 
-  return <MomentInvite invite={data} inviteToken={token} hasIdentity={Boolean(guestToken)} />;
+  return <MomentInvite invite={data} inviteToken={token} hasIdentity={hasIdentity} />;
 }
