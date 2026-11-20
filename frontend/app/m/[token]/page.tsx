@@ -5,6 +5,8 @@ import MomentInvite from "@/components/moment/moment-invite";
 import { GUEST_COOKIE } from "@/lib/guest-identity";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+export const instant = false;
+
 export default async function InvitePage({
   params,
 }: {
