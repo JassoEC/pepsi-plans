@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import Link from "next/link";
 import { createPortal } from "react-dom";
 
-import { getMorePlans } from "@/app/actions";
+import { createMoment, getMorePlans } from "@/app/actions";
 import {
   isPlanSelectionValid,
   MAX_SELECTED_PLANS,
@@ -31,6 +32,12 @@ export default function PlanDiscovery({
   const [showDeck, setShowDeck] = useState(false);
   const [hasRequestedMore, setHasRequestedMore] = useState(false);
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
+  const [momentTitle, setMomentTitle] = useState("");
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [copyError, setCopyError] = useState<string | null>(null);
+  const [isCreating, startCreating] = useTransition();
 
   const selectedPlans = useMemo(
     () => plans.filter((plan) => selectedPlanIds.includes(plan.id)),
@@ -83,11 +90,89 @@ export default function PlanDiscovery({
     setActivePlan(null);
   }
 
+  function handleCreateMoment() {
+    setCreateError(null);
+    startCreating(async () => {
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      const result = await createMoment(vibeId, selectedPlanIds, momentTitle, expiresAt);
+      if (!result.ok) {
+        setCreateError(result.error);
+        return;
+      }
+      setShareUrl(`${window.location.origin}/m/${result.inviteToken}`);
+    });
+  }
+
+  async function handleCopyInviteLink() {
+    if (!shareUrl) return;
+
+    setCopyError(null);
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setLinkCopied(true);
+    } catch {
+      setLinkCopied(false);
+      setCopyError("Your browser could not copy the link. Select the URL above and copy it manually.");
+    }
+  }
+
   function handleRemoveFromDeck(planId: string) {
     setSelectedPlanIds((current) => {
       if (current.length <= MIN_SELECTED_PLANS) return current;
       return current.filter((id) => id !== planId);
     });
+  }
+
+  if (shareUrl) {
+    return (
+      <section className="rounded-3xl border border-blue-100 bg-white p-6 text-center shadow-sm sm:p-10">
+        <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-blue-50 text-3xl text-[#005CB4]" aria-hidden="true">
+          ✓
+        </div>
+        <p className="mt-5 text-xs font-extrabold uppercase tracking-[0.18em] text-[#005CB4]">
+          Moment created
+        </p>
+        <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950">
+          {momentTitle.trim()}
+        </h2>
+        <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-600">
+          Your Moment is ready. Share this invitation link with your friends.
+        </p>
+        <div className="mt-7 text-left">
+          <label htmlFor="moment-invite-link" className="text-sm font-bold text-slate-800">
+            Your invite link
+          </label>
+          <input
+            id="moment-invite-link"
+            type="text"
+            readOnly
+            value={shareUrl}
+            onFocus={(event) => event.currentTarget.select()}
+            className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none focus:border-[#005CB4] focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={handleCopyInviteLink}
+          className="mt-4 w-full rounded-full bg-[#005CB4] px-7 py-4 text-sm font-extrabold text-white shadow-md shadow-blue-900/15 transition hover:bg-[#004A91] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4]"
+        >
+          {linkCopied ? "Link copied!" : "Copy and share the invitation link"}
+        </button>
+        <p className="mt-3 min-h-5 text-sm text-emerald-700" role="status" aria-live="polite">
+          {linkCopied ? "Your invite link is ready to share." : ""}
+        </p>
+        <Link
+          href="/"
+          className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-slate-500 transition hover:bg-slate-50 hover:text-[#005CB4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4]"
+        >
+          <span aria-hidden="true">←</span>
+          Back to dashboard
+        </Link>
+        {copyError ? (
+          <p className="mt-2 text-sm text-red-600" role="alert">{copyError}</p>
+        ) : null}
+      </section>
+    );
   }
 
   if (showDeck) {
@@ -96,13 +181,13 @@ export default function PlanDiscovery({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#005CB4]">
-              Deck selected
+              Selected Plans
             </p>
             <h3 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-950">
-              Your shortlist is ready.
+              Your selected plans are ready.
             </h3>
             <p className="mt-1 text-sm text-slate-500">
-              {selectedPlans.length} ideas ready for your group.
+              {selectedPlans.length} plans ready for your group.
             </p>
           </div>
           <button
@@ -132,8 +217,8 @@ export default function PlanDiscovery({
                   type="button"
                   onClick={() => handleRemoveFromDeck(plan.id)}
                   disabled={!canRemove}
-                  aria-label={canRemove ? `Remove ${plan.title} from shortlist` : `At least ${MIN_SELECTED_PLANS} plans are required`}
-                  title={canRemove ? "Remove from shortlist" : `Keep at least ${MIN_SELECTED_PLANS} plans`}
+                  aria-label={canRemove ? `Remove ${plan.title} from your selection` : `At least ${MIN_SELECTED_PLANS} plans are required`}
+                  title={canRemove ? "Remove from your selection" : `Keep at least ${MIN_SELECTED_PLANS} plans`}
                   className="flex size-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-lg font-semibold text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4] disabled:cursor-not-allowed disabled:opacity-35"
                 >
                   <span aria-hidden="true">×</span>
@@ -143,11 +228,45 @@ export default function PlanDiscovery({
           })}
         </div>
         <p className="mt-6 rounded-xl bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-900">
-          These are the ideas you want to bring to your group. Next, you’ll be able to create and share a room.
+          These are the ideas you want to bring to your group. Create your Moment to save them and invite your friends.
         </p>
         <p className="mt-2 text-xs text-slate-400">
-          You need at least {MIN_SELECTED_PLANS} plans in your shortlist. Remove a plan only while you have more than {MIN_SELECTED_PLANS}.
+          Keep at least {MIN_SELECTED_PLANS} plans selected. You can remove a plan when you've selected more than {MIN_SELECTED_PLANS}.
         </p>
+        <div className="mt-5">
+          <label htmlFor="moment-title" className="text-sm font-bold text-slate-800">
+            Give your Moment a title
+          </label>
+          <input
+            id="moment-title"
+            name="momentTitle"
+            type="text"
+            required
+            minLength={3}
+            maxLength={60}
+            value={momentTitle}
+            onChange={(event) => setMomentTitle(event.target.value)}
+            placeholder="e.g. Mauricio's birthday"
+            className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#005CB4] focus:ring-2 focus:ring-blue-100"
+          />
+          <p className="mt-1 text-xs text-slate-400">Your Vibe and selected plans will be saved with this Moment.</p>
+        </div>
+        {createError ? (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+            <p>{createError}</p>
+            {createError.includes("nickname") ? (
+              <Link href="/" className="mt-2 inline-block font-bold underline">Set up your nickname</Link>
+            ) : null}
+          </div>
+        ) : null}
+        <button
+          type="button"
+          onClick={handleCreateMoment}
+          disabled={isCreating || !selectionIsValid || momentTitle.trim().length < 3}
+          className="mt-5 w-full rounded-full bg-[#005CB4] px-7 py-4 text-sm font-extrabold text-white shadow-md shadow-blue-900/15 transition hover:bg-[#004A91] disabled:cursor-wait disabled:bg-slate-300 disabled:shadow-none"
+        >
+          {isCreating ? "Creating your Moment..." : "Create Moment"}
+        </button>
       </div>
     );
   }
@@ -198,9 +317,9 @@ export default function PlanDiscovery({
                   type="button"
                   onClick={() => handleToggle(plan.id)}
                   disabled={isDisabled}
-                  aria-label={isSelected ? `Remove ${plan.title} from shortlist` : `Add ${plan.title} to shortlist`}
+                  aria-label={isSelected ? `Remove ${plan.title} from your selection` : `Add ${plan.title} to your selection`}
                   aria-pressed={isSelected}
-                  title={isSelected ? "Remove from shortlist" : "Add to shortlist"}
+                  title={isSelected ? "Remove from your selection" : "Add to your selection"}
                   className={`flex size-8 shrink-0 items-center justify-center rounded-full border-2 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4] disabled:cursor-not-allowed disabled:opacity-40 ${
                     isSelected
                       ? "border-[#005CB4] bg-[#005CB4] text-white"
@@ -235,7 +354,7 @@ export default function PlanDiscovery({
               </div>
               {isDisabled ? (
                 <p className="mt-2 text-xs font-medium text-slate-400">
-                  Your shortlist is full.
+                  You've selected the maximum number of plans.
                 </p>
               ) : null}
             </article>
@@ -280,11 +399,11 @@ export default function PlanDiscovery({
             {selectedPlanIds.length < MIN_SELECTED_PLANS
               ? `Choose ${MIN_SELECTED_PLANS - selectedPlanIds.length} more to continue`
               : selectedPlanIds.length === MAX_SELECTED_PLANS
-                ? "Your deck is full"
+                ? "You've selected the maximum number of plans"
                 : "Looking good. Keep exploring or continue."}
           </p>
           <p className="mt-0.5 text-xs text-slate-500">
-            No account needed to explore and build your shortlist.
+            No account needed to explore and choose your plans.
           </p>
         </div>
         <button
@@ -293,7 +412,7 @@ export default function PlanDiscovery({
           onClick={() => setShowDeck(true)}
           className="rounded-full bg-[#005CB4] px-7 py-3 text-sm font-extrabold text-white shadow-md shadow-blue-900/15 transition hover:bg-[#004A91] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
         >
-          Review {selectedPlanIds.length} plans
+          Review {selectedPlanIds.length} selected plans
         </button>
       </div>
 
@@ -386,11 +505,11 @@ export default function PlanDiscovery({
                 className="mt-7 w-full rounded-full bg-[#005CB4] px-6 py-4 text-sm font-extrabold text-white shadow-lg shadow-blue-900/15 transition hover:bg-[#004A91] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
               >
                 {selectedPlanIds.includes(activePlan.id)
-                  ? "Remove from shortlist"
-                  : "Add to shortlist"}
+                  ? "Remove from your selection"
+                  : "Add to your selection"}
               </button>
               <p className="mt-3 text-center text-xs text-slate-400">
-                Exploring a plan won't add it to your shortlist.
+                Exploring a plan won't add it to your selection.
               </p>
             </div>
           </section>

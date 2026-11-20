@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pepsi Plans | Make a plan together",
+  title: "Pepsi Moments | Make the moment together",
   description:
-    "Find your group's vibe, explore Miami plans, and build a shortlist together.",
+    "Bring your group together, find your Vibe, and choose the Plans for your Moment.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
