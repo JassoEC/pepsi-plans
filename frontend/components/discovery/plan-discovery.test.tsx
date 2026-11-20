@@ -30,9 +30,9 @@ describe("PlanDiscovery", () => {
     fireEvent.click(screen.getByRole("button", { name: /plan 6/i }));
 
     expect(screen.getByText("2 of 10 selected")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: /continue with 2/i }));
+    fireEvent.click(screen.getByRole("button", { name: /review 2 plans/i }));
 
-    expect(screen.getByText("This is your shortlist.")).toBeTruthy();
+    expect(screen.getByText("Your shortlist is ready.")).toBeTruthy();
     expect(screen.getByText("Plan 1")).toBeTruthy();
     expect(screen.getByText("Plan 6")).toBeTruthy();
   });
