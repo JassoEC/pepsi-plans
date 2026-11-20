@@ -16,7 +16,7 @@ export default async function Home() {
         <span className="rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-slate-500">MIAMI, FL</span>
       </header>
       <GuestHome dashboard={dashboard} />
-      <footer className="mt-auto pt-5 text-center text-xs text-slate-400">Good plans. Better together.</footer>
+      <footer className="mt-auto pt-5 text-center text-xs text-slate-400">Good moments. Better together.</footer>
     </main>
   );
 }
