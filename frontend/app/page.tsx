@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 
-import { getActivePlansByVibe } from "@/lib/catalog/plans";
+import { getActivePlansPageByVibe } from "@/lib/catalog/plans";
 import { getActiveVibes } from "@/lib/catalog/vibes";
 import PlanDiscovery from "@/components/discovery/plan-discovery";
 
@@ -41,9 +41,9 @@ async function DiscoveryContent({
   const selectedVibeId =
     typeof vibeParam === "string" ? vibeParam : undefined;
   const selectedVibe = vibes.find((vibe) => vibe.id === selectedVibeId);
-  const plans = selectedVibe
-    ? await getActivePlansByVibe(selectedVibe.id)
-    : [];
+  const plansPage = selectedVibe
+    ? await getActivePlansPageByVibe(selectedVibe.id)
+    : { plans: [], hasMore: false };
   return (
     <main className="mx-auto flex min-h-[100svh] w-full max-w-5xl flex-1 flex-col px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-5 sm:px-8 sm:pt-8">
       <header className="flex items-center justify-between">
@@ -152,7 +152,12 @@ async function DiscoveryContent({
               </h1>
             </div>
           </div>
-          <PlanDiscovery key={selectedVibe.id} plans={plans} />
+          <PlanDiscovery
+            key={selectedVibe.id}
+            vibeId={selectedVibe.id}
+            initialPlans={plansPage.plans}
+            initialHasMore={plansPage.hasMore}
+          />
         </section>
       )}
 
