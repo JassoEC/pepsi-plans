@@ -14,28 +14,6 @@ async function getGuestToken() {
 
 const roomIdSchema = z.string().uuid();
 
-export async function startMomentVoting(roomId: string) {
-  const parsed = roomIdSchema.safeParse(roomId);
-  if (!parsed.success) return { ok: false as const, error: "Invalid Moment." };
-
-  const token = await getGuestToken();
-  if (!token) return { ok: false as const, error: "Your guest session has expired. Set up your nickname again." };
-
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("start_guest_moment_voting", {
-    p_token: token,
-    p_room_id: parsed.data,
-  });
-
-  if (error || data !== true) {
-    return { ok: false as const, error: "We couldn't start voting. Make sure you're the host and try again." };
-  }
-
-  revalidatePath(`/moment/${parsed.data}`);
-  revalidatePath("/");
-  return { ok: true as const };
-}
-
 const voteSchema = z.object({
   roomId: z.string().uuid(),
   planId: z.string().uuid(),
