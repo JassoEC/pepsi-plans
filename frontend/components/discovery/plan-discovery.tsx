@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 
 import { createMoment, getMorePlans } from "@/app/actions";
@@ -35,8 +34,10 @@ export default function PlanDiscovery({
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
   const [momentTitle, setMomentTitle] = useState("");
   const [createError, setCreateError] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [copyError, setCopyError] = useState<string | null>(null);
   const [isCreating, startCreating] = useTransition();
-  const router = useRouter();
 
   const selectedPlans = useMemo(
     () => plans.filter((plan) => selectedPlanIds.includes(plan.id)),
@@ -98,9 +99,21 @@ export default function PlanDiscovery({
         setCreateError(result.error);
         return;
       }
-      router.push("/");
-      router.refresh();
+      setShareUrl(`${window.location.origin}/m/${result.inviteToken}`);
     });
+  }
+
+  async function handleCopyInviteLink() {
+    if (!shareUrl) return;
+
+    setCopyError(null);
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setLinkCopied(true);
+    } catch {
+      setLinkCopied(false);
+      setCopyError("Your browser could not copy the link. Select the URL above and copy it manually.");
+    }
   }
 
   function handleRemoveFromDeck(planId: string) {
@@ -108,6 +121,51 @@ export default function PlanDiscovery({
       if (current.length <= MIN_SELECTED_PLANS) return current;
       return current.filter((id) => id !== planId);
     });
+  }
+
+  if (shareUrl) {
+    return (
+      <section className="rounded-3xl border border-blue-100 bg-white p-6 text-center shadow-sm sm:p-10">
+        <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-blue-50 text-3xl text-[#005CB4]" aria-hidden="true">
+          ✓
+        </div>
+        <p className="mt-5 text-xs font-extrabold uppercase tracking-[0.18em] text-[#005CB4]">
+          Moment created
+        </p>
+        <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950">
+          {momentTitle.trim()}
+        </h2>
+        <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-600">
+          Your Moment is ready. Share this link with your friends so they can join you.
+        </p>
+        <div className="mt-7 text-left">
+          <label htmlFor="moment-invite-link" className="text-sm font-bold text-slate-800">
+            Your invite link
+          </label>
+          <input
+            id="moment-invite-link"
+            type="text"
+            readOnly
+            value={shareUrl}
+            onFocus={(event) => event.currentTarget.select()}
+            className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none focus:border-[#005CB4] focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={handleCopyInviteLink}
+          className="mt-4 w-full rounded-full bg-[#005CB4] px-7 py-4 text-sm font-extrabold text-white shadow-md shadow-blue-900/15 transition hover:bg-[#004A91] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4]"
+        >
+          {linkCopied ? "Link copied!" : "Copy and share the link"}
+        </button>
+        <p className="mt-3 min-h-5 text-sm text-emerald-700" role="status" aria-live="polite">
+          {linkCopied ? "Your invite link is ready to share." : ""}
+        </p>
+        {copyError ? (
+          <p className="mt-2 text-sm text-red-600" role="alert">{copyError}</p>
+        ) : null}
+      </section>
+    );
   }
 
   if (showDeck) {
