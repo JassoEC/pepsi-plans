@@ -7,6 +7,7 @@ const GUEST_COOKIE = "pepsi_guest_identity";
 
 export type GuestRoom = {
   id: string;
+  title: string;
   vibe_name: string;
   status: "draft" | "ready" | "voting" | "completed" | "expired";
   created_at: string;
