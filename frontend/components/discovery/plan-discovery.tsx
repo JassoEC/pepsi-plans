@@ -170,11 +170,21 @@ export default function PlanDiscovery({
                 <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
                   {plan.category}
                 </span>
-                {isSelected ? (
-                  <span className="flex size-7 items-center justify-center rounded-full border border-[#005CB4] bg-[#005CB4] text-xs font-bold text-white" aria-label="Selected">
-                    ✓
-                  </span>
-                ) : null}
+                <button
+                  type="button"
+                  onClick={() => handleToggle(plan.id)}
+                  disabled={isDisabled}
+                  aria-label={isSelected ? `Remove ${plan.title} from shortlist` : `Add ${plan.title} to shortlist`}
+                  aria-pressed={isSelected}
+                  title={isSelected ? "Remove from shortlist" : "Add to shortlist"}
+                  className={`flex size-8 shrink-0 items-center justify-center rounded-full border-2 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4] disabled:cursor-not-allowed disabled:opacity-40 ${
+                    isSelected
+                      ? "border-[#005CB4] bg-[#005CB4] text-white"
+                      : "border-slate-300 bg-white text-transparent hover:border-[#005CB4]"
+                  }`}
+                >
+                  <span className="size-3 rounded-full bg-current" />
+                </button>
               </div>
               <h3 className="mt-5 text-lg font-extrabold leading-snug tracking-tight text-slate-950">
                 {plan.title}
