@@ -44,15 +44,6 @@ async function DiscoveryContent({
   const plans = selectedVibe
     ? await getActivePlansByVibe(selectedVibe.id)
     : [];
-  const selectedCopy = selectedVibe
-    ? vibeCopy[selectedVibe.slug] ?? {
-        feeling: "Find the kind of moment you are in the mood for.",
-        detail:
-          selectedVibe.description ??
-          "A handpicked set of ideas for your next group plan.",
-      }
-    : null;
-
   return (
     <main className="mx-auto flex min-h-[100svh] w-full max-w-5xl flex-1 flex-col px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-5 sm:px-8 sm:pt-8">
       <header className="flex items-center justify-between">
@@ -153,27 +144,12 @@ async function DiscoveryContent({
               <span aria-hidden="true">←</span> Back to Vibes
             </Link>
             <div className="mt-5 rounded-3xl bg-[#071B3A] p-5 text-white sm:p-7">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-200">
-                Your Vibe · {selectedVibe.name}
-              </p>
               <h1
                 id="plans-heading"
-                className="mt-2 text-3xl font-black tracking-tight sm:text-4xl"
+                className="text-2xl font-black tracking-tight sm:text-3xl"
               >
-                {selectedCopy?.feeling}
+                {selectedVibe.name}
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-blue-100/85">
-                {selectedCopy?.detail}
-              </p>
-            </div>
-            <div className="mt-6">
-              <h2 className="text-2xl font-extrabold tracking-tight text-slate-950">
-                Pick the plans that sound good
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Choose 2–10 ideas for your group. Your picks stay with you as
-                you explore.
-              </p>
             </div>
           </div>
           <PlanDiscovery key={selectedVibe.id} plans={plans} />
