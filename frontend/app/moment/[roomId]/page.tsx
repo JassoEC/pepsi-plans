@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
+import { z } from "zod";
 
 import MomentDetail from "@/components/moment/moment-detail";
 import { GUEST_COOKIE } from "@/lib/guest-identity";
@@ -11,6 +12,7 @@ export default async function MomentPage({
   params: Promise<{ roomId: string }>;
 }) {
   const { roomId } = await params;
+  if (!z.string().uuid().safeParse(roomId).success) notFound();
   const cookieStore = await cookies();
   const token = cookieStore.get(GUEST_COOKIE)?.value;
   if (!token) notFound();
