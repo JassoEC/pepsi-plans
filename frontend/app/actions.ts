@@ -1,6 +1,7 @@
 "use server";
 
 import { randomBytes } from "node:crypto";
+import { createMomentInviteToken } from "@/lib/moment-invite";
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -74,6 +75,45 @@ export async function createMoment(
     return { ok: false as const, error: "We couldn't create your Moment. Please check your selection and try again." };
   }
 
+  const stableInviteToken = createMomentInviteToken(data);
+  const { data: inviteRegistered, error: inviteError } = await supabase.rpc("register_room_invite_token", {
+    p_token: token,
+    p_room_id: data,
+    p_invite_token: stableInviteToken,
+  });
+
+  if (inviteError || inviteRegistered !== true) {
+    return { ok: false as const, error: "Your Moment was created, but we couldn't prepare its invitation link. Open it from your dashboard and try sharing again." };
+  }
+
   revalidatePath("/");
-  return { ok: true as const, roomId: data, inviteToken };
+  return { ok: true as const, roomId: data, inviteToken: stableInviteToken };
+}
+
+
+export async function getMomentInviteToken(roomId: string) {
+  const parsedRoomId = z.string().uuid().safeParse(roomId);
+  if (!parsedRoomId.success) {
+    return { ok: false as const, error: "Invalid Moment." };
+  }
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get(GUEST_COOKIE)?.value;
+  if (!token) {
+    return { ok: false as const, error: "Your guest session has expired. Please set up your nickname again." };
+  }
+
+  const inviteToken = createMomentInviteToken(parsedRoomId.data);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("register_room_invite_token", {
+    p_token: token,
+    p_room_id: parsedRoomId.data,
+    p_invite_token: inviteToken,
+  });
+
+  if (error || data !== true) {
+    return { ok: false as const, error: "We couldn't retrieve this Moment's invitation. Make sure you're the host and try again." };
+  }
+
+  return { ok: true as const, inviteToken };
 }
