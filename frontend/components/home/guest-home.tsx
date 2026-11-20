@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { registerGuest } from "@/app/guest-actions";
-import { getMomentInviteToken } from "@/app/actions";
 import type { GuestDashboard, GuestRoom } from "@/lib/guest-identity";
 
 type Props = { dashboard: GuestDashboard | null };
@@ -23,8 +22,6 @@ export default function GuestHome({ dashboard }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-  const [sharingRoomId, setSharingRoomId] = useState<string | null>(null);
-  const [shareMessage, setShareMessage] = useState<string | null>(null);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -70,14 +67,14 @@ export default function GuestHome({ dashboard }: Props) {
         <Link href="/create" className="inline-flex items-center justify-center rounded-full bg-[#005CB4] px-6 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#004A91]">+ Create a Moment</Link>
       </div>
       <div className="mt-10 grid gap-8 md:grid-cols-2">
-        <RoomSection title="Your Moments" rooms={dashboard.hosted} empty="No Moments yet. Bring your friends together and make one happen." onShare={async (roomId) => { setSharingRoomId(roomId); setShareMessage(null); const result = await getMomentInviteToken(roomId); if (!result.ok) { setShareMessage(result.error); setSharingRoomId(null); return; } const url = `${window.location.origin}/m/${result.inviteToken}`; try { await navigator.clipboard.writeText(url); setShareMessage("Invitation link copied."); } catch { setShareMessage(url); } setSharingRoomId(null); }} sharingRoomId={sharingRoomId} shareMessage={shareMessage} />
+        <RoomSection title="Your Moments" rooms={dashboard.hosted} empty="No Moments yet. Bring your friends together and make one happen." />
         <RoomSection title="Moments you have joined" rooms={dashboard.joined} empty="No invitations yet. When you join a friends Moment, you will find it here." />
       </div>
     </section>
   );
 }
 
-function RoomSection({ title, rooms, empty, onShare, sharingRoomId, shareMessage }: { title: string; rooms: GuestRoom[]; empty: string; onShare?: (roomId: string) => void; sharingRoomId?: string | null; shareMessage?: string | null }) {
+function RoomSection({ title, rooms, empty }: { title: string; rooms: GuestRoom[]; empty: string }) {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
@@ -92,7 +89,7 @@ function RoomSection({ title, rooms, empty, onShare, sharingRoomId, shareMessage
             <article key={room.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h3 className="font-bold text-slate-900">{room.title}</h3>
+                  <Link href={`/moment/${room.id}`} className="font-bold text-slate-900 hover:text-[#005CB4] hover:underline">{room.title}</Link>
                   <p className="mt-1 text-xs font-semibold text-[#005CB4]">{room.vibe_name}</p>
                   <p className="mt-1 text-xs text-slate-500">{room.participant_count} participants · {room.plan_count} plans</p>
                 </div>
@@ -100,9 +97,8 @@ function RoomSection({ title, rooms, empty, onShare, sharingRoomId, shareMessage
               </div>
               <div className="mt-3 flex items-center justify-between gap-3">
                 <p className="text-xs text-slate-400">{new Date(room.created_at).toLocaleDateString()}</p>
-                {onShare ? <button type="button" onClick={() => onShare(room.id)} disabled={sharingRoomId === room.id} className="rounded-full border border-slate-200 px-3 py-2 text-xs font-bold text-[#005CB4] transition hover:border-[#005CB4] disabled:opacity-50">{sharingRoomId === room.id ? "Preparing link..." : "Copy invitation"}</button> : null}
+                <Link href={`/moment/${room.id}`} className="rounded-full bg-[#005CB4] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#004A91]">Open Moment</Link>
               </div>
-              {shareMessage && onShare && sharingRoomId === null ? <p className="mt-2 break-all text-xs text-emerald-700" role="status">{shareMessage}</p> : null}
             </article>
           ))}
         </div>
