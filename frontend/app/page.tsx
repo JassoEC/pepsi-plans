@@ -4,6 +4,21 @@ import { getActivePlansByVibe } from "@/lib/catalog/plans";
 import { getActiveVibes } from "@/lib/catalog/vibes";
 import PlanDiscovery from "@/components/discovery/plan-discovery";
 
+const vibeCopy: Record<string, { feeling: string; detail: string }> = {
+  "pepsi-original": {
+    feeling: "Classic moments, made together.",
+    detail: "For the familiar, feel-good plans: good food, iconic spots and time to reconnect.",
+  },
+  "pepsi-zero-sugar": {
+    feeling: "A little more energy in the day.",
+    detail: "For getting outside, moving around and discovering something new.",
+  },
+  "pepsi-wild-cherry": {
+    feeling: "Make room for the unexpected.",
+    detail: "For expressive nights, playful plans and stories worth sharing.",
+  },
+};
+
 export default async function Home({ searchParams }: PageProps<"/">) {
   const [{ vibe: vibeParam }, vibes] = await Promise.all([
     searchParams,
@@ -16,16 +31,22 @@ export default async function Home({ searchParams }: PageProps<"/">) {
   const plans = selectedVibe
     ? await getActivePlansByVibe(selectedVibe.id)
     : [];
+  const selectedCopy = selectedVibe
+    ? vibeCopy[selectedVibe.slug] ?? {
+        feeling: "Find the kind of moment you are in the mood for.",
+        detail: selectedVibe.description ?? "A handpicked set of ideas for your next group plan.",
+      }
+    : null;
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 pb-16 pt-8 sm:px-8 lg:px-10">
+    <main className="mx-auto flex min-h-[100svh] w-full max-w-5xl flex-1 flex-col px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-5 sm:px-8 sm:pt-8">
       <header className="flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5" aria-label="Pepsi Plans home">
+        <Link href="/" className="flex items-center gap-2.5" aria-label="Pepsi Vibes home">
           <span className="flex size-9 items-center justify-center rounded-full bg-[#005CB4] text-lg font-black italic text-white shadow-sm">
             P
           </span>
           <span className="text-lg font-extrabold tracking-tight text-slate-950">
-            pepsi<span className="text-[#005CB4]">plans</span>
+            Pepsi <span className="text-[#005CB4]">Vibes</span>
           </span>
         </Link>
         <span className="rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-slate-500">
@@ -33,124 +54,101 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         </span>
       </header>
 
-      <section className="relative mt-10 overflow-hidden rounded-[2rem] bg-[#071B3A] px-6 py-10 text-white shadow-xl shadow-blue-950/10 sm:px-10 sm:py-14">
-        <div className="pointer-events-none absolute -right-12 -top-24 size-72 rounded-full border-[36px] border-[#1479D1]/30" />
-        <div className="pointer-events-none absolute -bottom-32 right-24 size-64 rounded-full bg-[#005CB4]/40 blur-3xl" />
-        <div className="relative max-w-2xl">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-blue-100">
-            <span className="size-2 rounded-full bg-[#4CC9F0]" />
-            Good plans. Better together.
-          </p>
-          <h1 className="max-w-xl text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl">
-            Make a plan worth <span className="text-[#54C8F2]">showing up for.</span>
-          </h1>
-          <p className="mt-5 max-w-lg text-base leading-7 text-blue-100/85 sm:text-lg">
-            Find your group&apos;s vibe, pick a few ideas, and get everyone on the same page.
-          </p>
-        </div>
-      </section>
+      <nav aria-label="Your plan journey" className="mx-auto mt-7 w-full max-w-sm">
+        <ol className="flex items-center gap-3">
+          <li className="flex flex-1 items-center gap-2">
+            <span className="flex size-7 items-center justify-center rounded-full bg-[#005CB4] text-xs font-bold text-white">1</span>
+            <span className={`text-xs font-bold ${selectedVibe ? "text-slate-400" : "text-slate-950"}`}>Choose a Vibe</span>
+          </li>
+          <span aria-hidden="true" className="h-px flex-1 bg-slate-200" />
+          <li className="flex flex-1 items-center justify-end gap-2">
+            <span className={`text-xs font-bold ${selectedVibe ? "text-slate-950" : "text-slate-400"}`}>Choose your plans</span>
+            <span className={`flex size-7 items-center justify-center rounded-full text-xs font-bold ${selectedVibe ? "bg-[#005CB4] text-white" : "bg-slate-200 text-slate-500"}`}>2</span>
+          </li>
+        </ol>
+      </nav>
 
-      <section className="mt-10" aria-labelledby="vibe-heading">
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#005CB4]">
-              Step 01
+      {!selectedVibe ? (
+        <section key="vibe-step" className="step-enter mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center py-8" aria-labelledby="vibe-heading">
+          <div className="mb-7 text-center">
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#005CB4]">
+              Destapa tus planes
             </p>
-            <h2 id="vibe-heading" className="mt-1 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">
-              What&apos;s the vibe?
-            </h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Pick the mood that feels right for your group.
+            <h1 id="vibe-heading" className="text-4xl font-black leading-[1.05] tracking-tight text-slate-950 sm:text-5xl">
+              What are you in the mood for?
+            </h1>
+            <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-slate-500">
+              Pick the Vibe that feels right today. We’ll bring you a shortlist of plans that fit.
             </p>
           </div>
-          {selectedVibe ? (
-            <Link href="/" className="text-sm font-semibold text-[#005CB4] hover:underline">
-              Change vibe
+
+          {vibes.length > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-3">
+              {vibes.map((vibe, index) => {
+                const accents = [
+                  "from-[#005CB4] to-[#1689D8]",
+                  "from-[#102D58] to-[#3169A4]",
+                  "from-[#7C315B] to-[#D45C86]",
+                ];
+                const copy = vibeCopy[vibe.slug];
+
+                return (
+                  <Link
+                    key={vibe.id}
+                    href={`/?vibe=${vibe.id}`}
+                    className="group flex min-h-44 flex-col rounded-3xl border border-slate-200 bg-white p-5 text-left shadow-sm transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#005CB4] sm:min-h-52 sm:p-6"
+                  >
+                    <span className={`mb-5 flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br ${accents[index % accents.length]} text-sm font-black text-white shadow-sm`}>
+                      {vibe.name.split(" ").at(-1)?.slice(0, 1) ?? "P"}
+                    </span>
+                    <span className="text-lg font-extrabold tracking-tight text-slate-950">{vibe.name}</span>
+                    <span className="mt-2 text-sm font-semibold leading-5 text-[#005CB4]">
+                      {copy?.feeling ?? vibe.description ?? "Find a plan that fits your day."}
+                    </span>
+                    <span className="mt-auto flex items-center justify-between pt-5 text-sm font-bold text-slate-500 transition group-hover:text-[#005CB4]">
+                      Explore this Vibe <span aria-hidden="true">→</span>
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+              No Vibes are available right now. Please check back soon.
+            </div>
+          )}
+          <p className="mt-7 text-center text-xs text-slate-400">
+            No sign-up. Just find a plan that feels right.
+          </p>
+        </section>
+      ) : (
+        <section key="plans-step" className="step-enter mx-auto w-full max-w-3xl flex-1 py-7" aria-labelledby="plans-heading">
+          <div className="mb-6">
+            <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[#005CB4] hover:underline">
+              <span aria-hidden="true">←</span> Back to Vibes
             </Link>
-          ) : null}
-        </div>
-
-        {vibes.length > 0 ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            {vibes.map((vibe, index) => {
-              const isSelected = vibe.id === selectedVibe?.id;
-              const accents = [
-                "from-[#005CB4] to-[#1689D8]",
-                "from-[#102D58] to-[#3169A4]",
-                "from-[#7C315B] to-[#D45C86]",
-              ];
-
-              return (
-                <Link
-                  key={vibe.id}
-                  href={isSelected ? "/" : `/?vibe=${vibe.id}`}
-                  aria-current={isSelected ? "true" : undefined}
-                  className={`group relative min-h-36 overflow-hidden rounded-2xl border p-5 text-left transition-all hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#005CB4] ${
-                    isSelected
-                      ? "border-[#005CB4] bg-blue-50 ring-2 ring-[#005CB4]/15"
-                      : "border-slate-200 bg-white hover:border-blue-200"
-                  }`}
-                >
-                  <span className={`mb-5 inline-flex size-9 items-center justify-center rounded-xl bg-gradient-to-br ${accents[index % accents.length]} text-sm font-black text-white shadow-sm`}>
-                    {vibe.name.split(" ").at(-1)?.slice(0, 1) ?? "P"}
-                  </span>
-                  <span className="block text-base font-bold text-slate-950">
-                    {vibe.name}
-                  </span>
-                  <span className="mt-1 block max-w-xs text-sm leading-5 text-slate-500">
-                    {vibe.description ?? "A curated set of ideas for your next group plan."}
-                  </span>
-                  {isSelected ? (
-                    <span className="absolute right-4 top-4 flex size-6 items-center justify-center rounded-full bg-[#005CB4] text-xs font-bold text-white">
-                      ✓
-                    </span>
-                  ) : (
-                    <span className="absolute right-4 top-4 text-lg text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-[#005CB4]">
-                      →
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-            No Vibes are available right now. Please check back soon.
-          </div>
-        )}
-      </section>
-
-      {selectedVibe ? (
-        <section className="mt-12" aria-labelledby="plans-heading">
-          <div className="mb-5">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#005CB4]">
-              Step 02
-            </p>
-            <h2 id="plans-heading" className="mt-1 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">
-              Build your plan deck
-            </h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Choose 2–10 ideas. You can mix picks from every batch.
-            </p>
+            <div className="mt-5 rounded-3xl bg-[#071B3A] p-5 text-white sm:p-7">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-200">Your Vibe · {selectedVibe.name}</p>
+              <h1 id="plans-heading" className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
+                {selectedCopy?.feeling}
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-blue-100/85">
+                {selectedCopy?.detail}
+              </p>
+            </div>
+            <div className="mt-6">
+              <h2 className="text-2xl font-extrabold tracking-tight text-slate-950">Pick the plans that sound good</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Choose 2–10 ideas for your group. Your picks stay with you as you explore.
+              </p>
+            </div>
           </div>
           <PlanDiscovery key={selectedVibe.id} plans={plans} />
         </section>
-      ) : (
-        <div className="mt-10 flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xl text-[#005CB4]">
-            ✦
-          </span>
-          <div>
-            <p className="font-bold text-slate-900">Your group, your call.</p>
-            <p className="mt-1 text-sm leading-5 text-slate-500">
-              Choose a Vibe to explore handpicked things to do around Miami.
-            </p>
-          </div>
-        </div>
       )}
 
-      <footer className="mt-auto pt-14 text-center text-xs text-slate-400">
-        Made for the moments you make together.
+      <footer className="mt-auto pt-5 text-center text-xs text-slate-400">
+        Good plans. Better together.
       </footer>
     </main>
   );
