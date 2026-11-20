@@ -20,7 +20,7 @@ const vibeCopy: Record<string, { feeling: string; detail: string }> = {
   },
 };
 
-export default function Home({ searchParams }: PageProps<"/">) {
+export default function Home({ searchParams }: PageProps<"/create">) {
   return (
     <Suspense fallback={<DiscoveryLoading />}>
       <DiscoveryContent searchParams={searchParams} />
@@ -31,7 +31,7 @@ export default function Home({ searchParams }: PageProps<"/">) {
 async function DiscoveryContent({
   searchParams,
 }: {
-  searchParams: PageProps<"/">["searchParams"];
+  searchParams: PageProps<"/create">["searchParams"];
 }) {
   const [{ vibe: vibeParam }, vibes] = await Promise.all([
     searchParams,
