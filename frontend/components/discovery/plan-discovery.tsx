@@ -33,6 +33,7 @@ export default function PlanDiscovery({
   const [showDeck, setShowDeck] = useState(false);
   const [hasRequestedMore, setHasRequestedMore] = useState(false);
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
+  const [momentTitle, setMomentTitle] = useState("");
   const [createError, setCreateError] = useState<string | null>(null);
   const [isCreating, startCreating] = useTransition();
   const router = useRouter();
@@ -92,7 +93,7 @@ export default function PlanDiscovery({
     setCreateError(null);
     startCreating(async () => {
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-      const result = await createMoment(vibeId, selectedPlanIds, expiresAt);
+      const result = await createMoment(vibeId, selectedPlanIds, momentTitle, expiresAt);
       if (!result.ok) {
         setCreateError(result.error);
         return;
@@ -167,6 +168,24 @@ export default function PlanDiscovery({
         <p className="mt-2 text-xs text-slate-400">
           Keep at least {MIN_SELECTED_PLANS} plans selected. You can remove a plan when you've selected more than {MIN_SELECTED_PLANS}.
         </p>
+        <div className="mt-5">
+          <label htmlFor="moment-title" className="text-sm font-bold text-slate-800">
+            Give your Moment a title
+          </label>
+          <input
+            id="moment-title"
+            name="momentTitle"
+            type="text"
+            required
+            minLength={3}
+            maxLength={60}
+            value={momentTitle}
+            onChange={(event) => setMomentTitle(event.target.value)}
+            placeholder="e.g. Mauricio's birthday"
+            className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#005CB4] focus:ring-2 focus:ring-blue-100"
+          />
+          <p className="mt-1 text-xs text-slate-400">Your Vibe and selected plans will be saved with this Moment.</p>
+        </div>
         {createError ? (
           <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
             <p>{createError}</p>
@@ -178,7 +197,7 @@ export default function PlanDiscovery({
         <button
           type="button"
           onClick={handleCreateMoment}
-          disabled={isCreating || !selectionIsValid}
+          disabled={isCreating || !selectionIsValid || momentTitle.trim().length < 3}
           className="mt-5 w-full rounded-full bg-[#005CB4] px-7 py-4 text-sm font-extrabold text-white shadow-md shadow-blue-900/15 transition hover:bg-[#004A91] disabled:cursor-wait disabled:bg-slate-300 disabled:shadow-none"
         >
           {isCreating ? "Creating your Moment..." : "Create Moment"}
