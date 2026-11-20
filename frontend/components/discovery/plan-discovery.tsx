@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { getMorePlans } from "@/app/actions";
 import {
@@ -262,19 +263,19 @@ export default function PlanDiscovery({
         </button>
       </div>
 
-      {activePlan ? (
+      {activePlan ? createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/55 backdrop-blur-[2px] sm:items-center sm:p-6"
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/55 p-4 backdrop-blur-[2px] sm:p-6"
           onClick={() => setActivePlan(null)}
         >
           <section
             role="dialog"
             aria-modal="true"
             aria-labelledby="plan-detail-title"
-            className="max-h-[92dvh] w-full max-w-xl overflow-y-auto rounded-t-[2rem] bg-white shadow-2xl sm:rounded-[2rem]"
+            className="my-auto max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="sticky top-0 z-10 flex items-center justify-center bg-white/95 px-5 pb-2 pt-3 backdrop-blur sm:rounded-t-[2rem]">
+            <div className="sticky top-0 z-10 flex items-center justify-center rounded-t-2xl bg-white/95 px-5 pb-2 pt-3 backdrop-blur">
               <span className="h-1.5 w-12 rounded-full bg-slate-200" />
               <button
                 type="button"
@@ -359,7 +360,8 @@ export default function PlanDiscovery({
               </p>
             </div>
           </section>
-        </div>
+        </div>,
+        document.body,
       ) : null}
     </div>
   );
