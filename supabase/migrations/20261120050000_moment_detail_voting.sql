@@ -29,7 +29,7 @@ begin
 
   if not found then return null; end if;
 
-  select r.*, rp.*
+  select r, rp
     into target_room, target_participant
     from public.rooms r
     join public.room_participants rp on rp.room_id = r.id
