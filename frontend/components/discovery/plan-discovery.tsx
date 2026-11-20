@@ -132,8 +132,8 @@ export default function PlanDiscovery({
                   type="button"
                   onClick={() => handleRemoveFromDeck(plan.id)}
                   disabled={!canRemove}
-                  aria-label={canRemove ? `Remove ${plan.title} from your selected plans` : `At least ${MIN_SELECTED_PLANS} plans are required`}
-                  title={canRemove ? "Remove from your selected plans" : `Keep at least ${MIN_SELECTED_PLANS} plans`}
+                  aria-label={canRemove ? `Remove ${plan.title} from your selection` : `At least ${MIN_SELECTED_PLANS} plans are required`}
+                  title={canRemove ? "Remove from your selection" : `Keep at least ${MIN_SELECTED_PLANS} plans`}
                   className="flex size-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-lg font-semibold text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4] disabled:cursor-not-allowed disabled:opacity-35"
                 >
                   <span aria-hidden="true">×</span>
@@ -146,7 +146,7 @@ export default function PlanDiscovery({
           These are the ideas you want to bring to your group. Next, you’ll be able to create and share a room.
         </p>
         <p className="mt-2 text-xs text-slate-400">
-          You need at least {MIN_SELECTED_PLANS} plans in your selected plans. Remove a plan only while you have more than {MIN_SELECTED_PLANS}.
+          Keep at least {MIN_SELECTED_PLANS} plans selected. You can remove a plan when you've selected more than {MIN_SELECTED_PLANS}.
         </p>
       </div>
     );
@@ -198,9 +198,9 @@ export default function PlanDiscovery({
                   type="button"
                   onClick={() => handleToggle(plan.id)}
                   disabled={isDisabled}
-                  aria-label={isSelected ? `Remove ${plan.title} from your selected plans` : `Add ${plan.title} to your selected plans`}
+                  aria-label={isSelected ? `Remove ${plan.title} from your selection` : `Add ${plan.title} to your selection`}
                   aria-pressed={isSelected}
-                  title={isSelected ? "Remove from your selected plans" : "Add to your selected plans"}
+                  title={isSelected ? "Remove from your selection" : "Add to your selection"}
                   className={`flex size-8 shrink-0 items-center justify-center rounded-full border-2 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005CB4] disabled:cursor-not-allowed disabled:opacity-40 ${
                     isSelected
                       ? "border-[#005CB4] bg-[#005CB4] text-white"
@@ -235,7 +235,7 @@ export default function PlanDiscovery({
               </div>
               {isDisabled ? (
                 <p className="mt-2 text-xs font-medium text-slate-400">
-                  Selected Plans is full.
+                  You've selected the maximum number of plans.
                 </p>
               ) : null}
             </article>
@@ -280,11 +280,11 @@ export default function PlanDiscovery({
             {selectedPlanIds.length < MIN_SELECTED_PLANS
               ? `Choose ${MIN_SELECTED_PLANS - selectedPlanIds.length} more to continue`
               : selectedPlanIds.length === MAX_SELECTED_PLANS
-                ? "Selected Plans is full"
+                ? "You've selected the maximum number of plans"
                 : "Looking good. Keep exploring or continue."}
           </p>
           <p className="mt-0.5 text-xs text-slate-500">
-            No account needed to explore and build your selected plans.
+            No account needed to explore and choose your plans.
           </p>
         </div>
         <button
@@ -293,7 +293,7 @@ export default function PlanDiscovery({
           onClick={() => setShowDeck(true)}
           className="rounded-full bg-[#005CB4] px-7 py-3 text-sm font-extrabold text-white shadow-md shadow-blue-900/15 transition hover:bg-[#004A91] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
         >
-          Review {selectedPlanIds.length} plans
+          Review {selectedPlanIds.length} selected plans
         </button>
       </div>
 
@@ -386,11 +386,11 @@ export default function PlanDiscovery({
                 className="mt-7 w-full rounded-full bg-[#005CB4] px-6 py-4 text-sm font-extrabold text-white shadow-lg shadow-blue-900/15 transition hover:bg-[#004A91] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
               >
                 {selectedPlanIds.includes(activePlan.id)
-                  ? "Remove from your selected plans"
-                  : "Add to your selected plans"}
+                  ? "Remove from your selection"
+                  : "Add to your selection"}
               </button>
               <p className="mt-3 text-center text-xs text-slate-400">
-                Exploring a plan won't add it to your selected plans.
+                Exploring a plan won't add it to your selection.
               </p>
             </div>
           </section>
