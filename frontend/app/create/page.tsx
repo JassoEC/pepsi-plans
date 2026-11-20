@@ -50,7 +50,7 @@ async function DiscoveryContent({
         <Link
           href="/create"
           className="flex items-center gap-2.5"
-          aria-label="Pepsi Vibes home"
+          aria-label="Pepsi Moments home"
         >
           <span className="flex size-9 items-center justify-center rounded-full bg-[#005CB4] text-lg font-black italic text-white shadow-sm">
             P
@@ -178,7 +178,7 @@ function DiscoveryLoading() {
             P
           </span>
           <span className="text-lg font-extrabold tracking-tight text-slate-950">
-            Pepsi <span className="text-[#005CB4]">Vibes</span>
+            Pepsi <span className="text-[#005CB4]">Moments</span>
           </span>
         </div>
         <span className="rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-slate-500">
@@ -213,7 +213,7 @@ function DiscoveryLoading() {
         </div>
       </section>
       <footer className="mt-auto pt-5 text-center text-xs text-slate-400">
-        Good plans. Better together.
+        Good moments. Better together.
       </footer>
     </main>
   );
