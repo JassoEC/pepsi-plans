@@ -59,7 +59,8 @@ export default function MomentDetail({ moment }: { moment: Moment }) {
   const [isPending, startTransition] = useTransition();
   const status = getStatus(moment);
   const isOpen = status === "Voting open";
-  const maxVotes = Math.max(1, ...moment.plans.map((plan) => plan.vote_count));
+  const sortedPlans = [...moment.plans].sort((a, b) => b.vote_count - a.vote_count || a.position - b.position);
+  const maxVotes = Math.max(0, ...sortedPlans.map((plan) => plan.vote_count));
 
   async function handleShare() {
     setError(null);
@@ -149,33 +150,38 @@ export default function MomentDetail({ moment }: { moment: Moment }) {
         {error ? <p role="alert" className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
 
         <section className="mt-8">
-          <div className="mb-4 flex items-end justify-between gap-3">
+          <div className="mb-5 flex items-end justify-between gap-3">
             <h2 className="text-lg font-black text-slate-950">{isOpen ? "Crew favorites" : "Final results"}</h2>
-            <span className="text-xs font-semibold text-slate-500">{moment.plans.length} plans</span>
+            <span className="text-xs font-semibold text-slate-500">{sortedPlans.length} plans</span>
           </div>
-          <div className="space-y-3">
-            {moment.plans.map((plan) => {
-              const percentage = Math.round((plan.vote_count / maxVotes) * 100);
+          <ol className="space-y-5">
+            {sortedPlans.map((plan, index) => {
+              const percentage = maxVotes === 0 ? 0 : Math.round((plan.vote_count / maxVotes) * 100);
               return (
-                <article key={plan.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5">
-                  <div className="flex items-start gap-3">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-black text-[#005CB4]">{String(plan.position).padStart(2, "0")}</span>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-base font-extrabold leading-6 text-slate-950">{plan.title}</h3>
-                      <p className="mt-1 text-xs text-slate-500">{[plan.neighborhood, plan.budget_label].filter(Boolean).join(" · ")}</p>
+                <li key={plan.id} className="space-y-2">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex min-w-0 items-baseline gap-2">
+                      <span className="shrink-0 text-xs font-bold tabular-nums text-slate-400">{String(index + 1).padStart(2, "0")}</span>
+                      <h3 className="truncate text-sm font-bold text-slate-900">{plan.title}</h3>
                     </div>
-                    <div className="shrink-0 text-right">
-                      <p className="text-xl font-black tabular-nums text-slate-950">{plan.vote_count}</p>
-                      <p className="text-[10px] font-semibold text-slate-400">{plan.vote_count === 1 ? "vote" : "votes"}</p>
-                    </div>
+                    <span className="shrink-0 text-sm font-extrabold tabular-nums text-slate-950" aria-label={`${plan.vote_count} votes`}>
+                      {plan.vote_count}
+                    </span>
                   </div>
-                  <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100" role="img" aria-label={`${plan.vote_count} votes, ${percentage}% of the leading plan's votes`}>
-                    <div className="h-full rounded-full bg-gradient-to-r from-[#005CB4] to-[#20A7E8] transition-all duration-500" style={{ width: `${percentage}%` }} />
+                  <div
+                    className="h-2.5 overflow-hidden rounded-full bg-slate-200/80"
+                    role="img"
+                    aria-label={`${plan.vote_count} votes, ${percentage}% of the leading plan's votes`}
+                  >
+                    <div
+                      className="h-full rounded-full bg-[linear-gradient(90deg,#005CB4_0%,#FFFFFF_52%,#E32934_100%)] transition-[width] duration-700 ease-out"
+                      style={{ width: `${percentage}%` }}
+                    />
                   </div>
-                </article>
+                </li>
               );
             })}
-          </div>
+          </ol>
         </section>
 
         {moment.is_host && isOpen && !moment.has_voted ? (
