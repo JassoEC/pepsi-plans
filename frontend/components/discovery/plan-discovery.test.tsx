@@ -55,7 +55,7 @@ describe("PlanDiscovery", () => {
       5,
     );
 
-    await screen.findByRole("button", { name: /plan 8/i });
+    await screen.findByRole("button", { name: "Add Plan 8 to your selection" });
     expect(screen.getByText("1 of 10 selected")).toBeInTheDocument();
     expect(screen.getByText("You've seen all the ideas for this Vibe.")).toBeInTheDocument();
 
@@ -98,10 +98,10 @@ describe("PlanDiscovery", () => {
     const continueButton = screen.getByRole("button", { name: /review 0 plans/i });
     expect(continueButton).toBeDisabled();
 
-    fireEvent.click(screen.getByRole("button", { name: /plan 1/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Add Plan 1 to your selection" }));
     expect(screen.getByRole("button", { name: /review 1 plans/i })).toBeDisabled();
 
-    fireEvent.click(screen.getByRole("button", { name: /plan 2/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Add Plan 2 to your selection" }));
     expect(screen.getByRole("button", { name: /review 2 plans/i })).toBeEnabled();
   });
 
