@@ -69,7 +69,7 @@ begin
     'participants', coalesce((
       select jsonb_agg(
         jsonb_build_object('id', rp.id, 'nickname', participant.name)
-        order by rp.joined_at, participant.name
+        order by participant.name, rp.id
       )
       from public.room_participants rp
       join public.users participant on participant.id = rp.user_id
