@@ -64,7 +64,7 @@ describe("PlanDiscovery", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add Plan 6 to your selection" }));
     fireEvent.click(screen.getByRole("button", { name: "Review 2 selected plans" }));
 
-    expect(screen.getByText("Your shortlist is ready.")).toBeInTheDocument();
+    expect(screen.getByText("Your selected plans are ready.")).toBeInTheDocument();
     expect(screen.getByText("Plan 1")).toBeInTheDocument();
     expect(screen.getByText("Plan 6")).toBeInTheDocument();
   });
