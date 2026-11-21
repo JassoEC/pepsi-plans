@@ -65,6 +65,7 @@ export default function MomentVote({ moment }: { moment: Moment }) {
   });
   const [boostUsed, setBoostUsed] = useState(moment.my_boost_used);
   const [error, setError] = useState<string | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
   const [isPending, startTransition] = useTransition();
   const pointerStartX = useRef<number | null>(null);
 
@@ -81,6 +82,7 @@ export default function MomentVote({ moment }: { moment: Moment }) {
     startTransition(async () => {
       const result = await submitMomentVote(moment.id, planId, action);
       if (!result.ok) {
+        setSwipeOffset(0);
         setError(result.error);
         return;
       }
@@ -89,6 +91,7 @@ export default function MomentVote({ moment }: { moment: Moment }) {
         current.map((plan) => plan.id === planId ? { ...plan, my_vote: action } : plan),
       );
       if (action === "boost") setBoostUsed(true);
+      setSwipeOffset(0);
 
       const nextIndex = plans.findIndex(
         (plan, index) => index > currentIndex && plan.id !== planId && !plan.my_vote,
@@ -103,7 +106,15 @@ export default function MomentVote({ moment }: { moment: Moment }) {
 
   function handlePointerDown(event: PointerEvent<HTMLElement>) {
     if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (currentPlan?.my_vote) return;
     pointerStartX.current = event.clientX;
+    setSwipeOffset(0);
+  }
+
+  function handlePointerMove(event: PointerEvent<HTMLElement>) {
+    if (pointerStartX.current === null) return;
+    const distance = event.clientX - pointerStartX.current;
+    setSwipeOffset(Math.max(-180, Math.min(180, distance)));
   }
 
   function handlePointerUp(event: PointerEvent<HTMLElement>) {
@@ -114,8 +125,12 @@ export default function MomentVote({ moment }: { moment: Moment }) {
 
     const distance = event.clientX - pointerStartX.current;
     pointerStartX.current = null;
-    if (Math.abs(distance) < 75) return;
+    if (Math.abs(distance) < 75) {
+      setSwipeOffset(0);
+      return;
+    }
 
+    setSwipeOffset(distance > 0 ? 420 : -420);
     handleVote(currentPlan.id, distance > 0 ? "like" : "dislike");
   }
 
@@ -189,8 +204,10 @@ export default function MomentVote({ moment }: { moment: Moment }) {
             <article
               key={currentPlan.id}
               onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
-              onPointerCancel={() => { pointerStartX.current = null; }}
+              onPointerCancel={() => { pointerStartX.current = null; setSwipeOffset(0); }}
+              style={{ transform: `translate3d(${swipeOffset}px, 0, 0) rotate(${swipeOffset / 24}deg)`, transition: pointerStartX.current === null ? "transform 180ms ease-out" : "none" }}
               className="step-enter relative mt-3 flex min-h-[390px] flex-1 touch-pan-y flex-col overflow-hidden rounded-[1.8rem] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(7,27,58,0.12)] sm:min-h-[470px]"
               aria-label={`Plan: ${currentPlan.title}`}
             >
