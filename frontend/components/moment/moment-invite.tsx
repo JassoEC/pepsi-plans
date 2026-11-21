@@ -48,7 +48,7 @@ export default function MomentInvite({ invite }: { invite: Invite }) {
           {invite.title}
         </h1>
         <p className="mt-5 max-w-md text-base leading-7 text-blue-100/75 sm:text-lg">
-          Your friends are making plans. Come help decide what happens next.
+          Your next moment starts here.
         </p>
 
         <div className="mt-9 flex items-center gap-2.5 text-sm font-medium text-blue-100/65">
