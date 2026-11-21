@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 
 import "@testing-library/jest-dom/vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getMorePlans } from "@/app/actions";
 import PlanDiscovery from "./plan-discovery";
@@ -13,6 +13,8 @@ vi.mock("@/app/actions", () => ({
 }));
 
 const mockedGetMorePlans = vi.mocked(getMorePlans);
+
+afterEach(() => cleanup());
 
 function makePlans(count: number, startAt = 1): Plan[] {
   return Array.from({ length: count }, (_, index) => ({
@@ -47,22 +49,22 @@ describe("PlanDiscovery", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /plan 1/i }));
-    fireEvent.click(screen.getByRole("button", { name: /get more suggestions/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Add Plan 1 to your selection" }));
+    fireEvent.click(screen.getByRole("button", { name: "Get more suggestions", exact: true }));
 
     expect(mockedGetMorePlans).toHaveBeenCalledWith(
       "20000000-0000-4000-8000-000000000001",
       5,
     );
 
-    await screen.findByRole("button", { name: /plan 8/i });
+    await screen.findByRole("button", { name: "Add Plan 8 to your selection" });
     expect(screen.getByText("1 of 10 selected")).toBeInTheDocument();
     expect(screen.getByText("You've seen all the ideas for this Vibe.")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /plan 6/i }));
-    fireEvent.click(screen.getByRole("button", { name: /review 2 plans/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Add Plan 6 to your selection" }));
+    fireEvent.click(screen.getByRole("button", { name: "Review 2 selected plans" }));
 
-    expect(screen.getByText("Your shortlist is ready.")).toBeInTheDocument();
+    expect(screen.getByText("Your selected plans are ready.")).toBeInTheDocument();
     expect(screen.getByText("Plan 1")).toBeInTheDocument();
     expect(screen.getByText("Plan 6")).toBeInTheDocument();
   });
@@ -95,14 +97,14 @@ describe("PlanDiscovery", () => {
       />,
     );
 
-    const continueButton = screen.getByRole("button", { name: /review 0 plans/i });
+    const continueButton = screen.getByRole("button", { name: "Review 0 selected plans" });
     expect(continueButton).toBeDisabled();
 
-    fireEvent.click(screen.getByRole("button", { name: /plan 1/i }));
-    expect(screen.getByRole("button", { name: /review 1 plans/i })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Add Plan 1 to your selection" }));
+    expect(screen.getByRole("button", { name: "Review 1 selected plans" })).toBeDisabled();
 
-    fireEvent.click(screen.getByRole("button", { name: /plan 2/i }));
-    expect(screen.getByRole("button", { name: /review 2 plans/i })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "Add Plan 2 to your selection" }));
+    expect(screen.getByRole("button", { name: "Review 2 selected plans" })).toBeEnabled();
   });
 
   it("prevents selecting more than ten plans", () => {
@@ -115,10 +117,10 @@ describe("PlanDiscovery", () => {
     );
 
     for (let index = 1; index <= 10; index += 1) {
-      fireEvent.click(screen.getByRole("button", { name: new RegExp(`Plan ${index} A good time together`, "i") }));
+      fireEvent.click(screen.getByRole("button", { name: `Add Plan ${index} to your selection` }));
     }
 
     expect(screen.getByText("10 of 10 selected")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /plan 11/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Plan 11 to your selection" })).toBeDisabled();
   });
 });
