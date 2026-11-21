@@ -98,13 +98,6 @@ function RoomSection({ title, rooms }: { title: string; rooms: GuestRoom[] }) {
               </div>
               <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600">{statusCopy[room.status]}</span>
             </div>
-            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-              <p className="text-xs text-slate-400">{new Date(room.created_at).toLocaleDateString()}</p>
-              <span className="inline-flex items-center gap-1 text-sm font-bold text-[#005CB4]">
-                Open Moment
-                <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">↗</span>
-              </span>
-            </div>
           </Link>
         ))}
       </div>
