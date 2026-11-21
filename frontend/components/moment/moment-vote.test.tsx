@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import "@testing-library/jest-dom/vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { submitVoteMock } = vi.hoisted(() => ({ submitVoteMock: vi.fn() }));
@@ -72,8 +72,9 @@ describe("MomentVote", () => {
     fireEvent.click(screen.getByRole("button", { name: "View details for Sunset picnic" }));
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Sunset picnic" })).toBeInTheDocument();
-    expect(screen.getByText("Pick up snacks and enjoy the sunset.")).toBeInTheDocument();
+    const details = screen.getByRole("dialog");
+    expect(within(details).getByRole("heading", { name: "Sunset picnic" })).toBeInTheDocument();
+    expect(within(details).getByText("Pick up snacks and enjoy the sunset.")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Close plan details" }));
 
