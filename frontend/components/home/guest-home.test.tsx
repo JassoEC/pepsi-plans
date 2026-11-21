@@ -55,6 +55,8 @@ describe("GuestHome", () => {
     expect(card).toHaveAttribute("href", `/moment/${room.id}`);
     expect(screen.queryByRole("link", { name: /view and share/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /add my votes/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("Open Moment")).not.toBeInTheDocument();
+    expect(screen.queryByText("11/21/2026")).not.toBeInTheDocument();
   });
 
   it("shows hosted and joined collections when both contain Moments", () => {
