@@ -65,6 +65,7 @@ export default function MomentVote({ moment }: { moment: Moment }) {
   });
   const [boostUsed, setBoostUsed] = useState(moment.my_boost_used);
   const [error, setError] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isPending, startTransition] = useTransition();
   const pointerStartX = useRef<number | null>(null);
@@ -137,6 +138,7 @@ export default function MomentVote({ moment }: { moment: Moment }) {
   function moveToPlan(direction: -1 | 1) {
     const next = Math.min(Math.max(currentIndex + direction, 0), plans.length - 1);
     setCurrentIndex(next);
+    setDetailsOpen(false);
     setError(null);
   }
 
@@ -244,8 +246,53 @@ export default function MomentVote({ moment }: { moment: Moment }) {
                 ) : null}
                 {currentPlan.short_insight ? <p className="text-base font-extrabold leading-6 text-slate-900">{currentPlan.short_insight}</p> : null}
                 {currentPlan.description ? <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-500">{currentPlan.description}</p> : null}
+                <button
+                  type="button"
+                  aria-label={`View details for ${currentPlan.title}`}
+                  aria-haspopup="dialog"
+                  aria-expanded={detailsOpen}
+                  onPointerDown={(event) => event.stopPropagation()}
+                  onClick={() => setDetailsOpen(true)}
+                  className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 text-xs font-extrabold text-[#005CB4] transition hover:border-blue-200 hover:bg-blue-50"
+                >
+                  <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg>
+                  View plan details
+                </button>
               </div>
             </article>
+
+            {detailsOpen ? (
+              <div
+                className="fixed inset-0 z-50 flex items-end justify-center bg-[#061A36]/65 p-3 backdrop-blur-sm sm:items-center sm:p-6"
+                onClick={() => setDetailsOpen(false)}
+              >
+                <section
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="plan-details-title"
+                  className="max-h-[85svh] w-full max-w-lg overflow-y-auto rounded-[1.8rem] bg-white p-6 shadow-2xl"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#005CB4]">The plan</p>
+                      <h2 id="plan-details-title" className="mt-2 text-2xl font-black tracking-tight text-slate-950">{currentPlan.title}</h2>
+                    </div>
+                    <button type="button" aria-label="Close plan details" onClick={() => setDetailsOpen(false)} className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200">
+                      <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                    </button>
+                  </div>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    <span className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-[#005CB4]">{currentPlan.category}</span>
+                    {currentPlan.neighborhood ? <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600">{currentPlan.neighborhood}</span> : null}
+                    {currentPlan.budget_label ? <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600">{currentPlan.budget_label}</span> : null}
+                  </div>
+                  {currentPlan.short_insight ? <p className="mt-5 text-base font-extrabold leading-6 text-slate-900">{currentPlan.short_insight}</p> : null}
+                  {currentPlan.description ? <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-600">{currentPlan.description}</p> : <p className="mt-3 text-sm leading-7 text-slate-500">More details coming soon.</p>}
+                  <button type="button" onClick={() => setDetailsOpen(false)} className="mt-7 min-h-12 w-full rounded-full bg-[#005CB4] px-5 text-sm font-extrabold text-white transition hover:bg-[#004C98]">Back to voting</button>
+                </section>
+              </div>
+            ) : null}
 
             {error ? <p role="alert" className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{error}</p> : null}
 
