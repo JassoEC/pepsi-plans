@@ -174,7 +174,7 @@ export default function MomentDetail({ moment }: { moment: Moment }) {
                     aria-label={`${plan.vote_count} votes, ${percentage}% of the leading plan's votes`}
                   >
                     <div
-                      className="h-full rounded-full bg-[linear-gradient(90deg,#005CB4_0%,#FFFFFF_52%,#E32934_100%)] transition-[width] duration-700 ease-out"
+                      className="h-full rounded-full bg-[#0866C6] transition-[width] duration-700 ease-out"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
