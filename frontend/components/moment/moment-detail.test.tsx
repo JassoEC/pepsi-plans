@@ -53,19 +53,22 @@ const baseMoment = {
 };
 
 describe("MomentDetail", () => {
-  it("shows host sharing, participant identities, and plan vote bars", () => {
+  it("puts the Moment title first and shows participant initials only", () => {
     render(<MomentDetail moment={baseMoment} />);
 
-    expect(screen.getByRole("button", { name: /copy invitation link/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Saturday with friends" })).toBeInTheDocument();
     expect(screen.getByText("E")).toBeInTheDocument();
-    expect(screen.getByText("MJ")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "What's winning?" })).toBeInTheDocument();
+    expect(screen.getByText("M")).toBeInTheDocument();
+    expect(screen.queryByText("Emanuel")).not.toBeInTheDocument();
+    expect(screen.queryByText("Maria J")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /copy invite/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Crew favorites" })).toBeInTheDocument();
     expect(screen.getByText("Paddleboard on Biscayne Bay")).toBeInTheDocument();
     expect(screen.getByLabelText("3 votes, 100% of the leading plan's votes")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Add my votes" })).toBeInTheDocument();
   });
 
-  it("shows a social results recap for a guest without host actions or voting controls", () => {
+  it("shows the same simplified Moment card to guests without host controls", () => {
     render(
       <MomentDetail
         moment={{
@@ -76,10 +79,12 @@ describe("MomentDetail", () => {
       />,
     );
 
-    expect(screen.getByText("You're part of this Moment. See what your crew is vibing with.")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "The crew's favorites" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /copy invitation link/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Saturday with friends" })).toBeInTheDocument();
+    expect(screen.getByText("M")).toBeInTheDocument();
+    expect(screen.queryByText("Maria J")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Crew favorites" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /copy invite/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /close voting/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Add my votes" })).not.toBeInTheDocument();
-    expect(screen.getByText("MJ")).toBeInTheDocument();
   });
 });
