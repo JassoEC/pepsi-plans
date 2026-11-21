@@ -19,5 +19,5 @@ export default async function InvitePage({
 
   if (error || !data) notFound();
 
-  return <MomentInvite invite={data} />;
+  return <MomentInvite invite={data} inviteToken={token} />;
 }
