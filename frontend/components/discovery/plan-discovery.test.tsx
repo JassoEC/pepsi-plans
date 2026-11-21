@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 
 import "@testing-library/jest-dom/vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getMorePlans } from "@/app/actions";
 import PlanDiscovery from "./plan-discovery";
@@ -47,8 +47,8 @@ describe("PlanDiscovery", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /plan 1/i }));
-    fireEvent.click(screen.getByRole("button", { name: /get more suggestions/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Add Plan 1 to your selection" }));
+    fireEvent.click(screen.getByRole("button", { name: "Get more suggestions", exact: true }));
 
     expect(mockedGetMorePlans).toHaveBeenCalledWith(
       "20000000-0000-4000-8000-000000000001",
@@ -59,7 +59,7 @@ describe("PlanDiscovery", () => {
     expect(screen.getByText("1 of 10 selected")).toBeInTheDocument();
     expect(screen.getByText("You've seen all the ideas for this Vibe.")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /plan 6/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Add Plan 6 to your selection" }));
     fireEvent.click(screen.getByRole("button", { name: /review 2 plans/i }));
 
     expect(screen.getByText("Your shortlist is ready.")).toBeInTheDocument();
@@ -115,10 +115,10 @@ describe("PlanDiscovery", () => {
     );
 
     for (let index = 1; index <= 10; index += 1) {
-      fireEvent.click(screen.getByRole("button", { name: new RegExp(`Plan ${index} A good time together`, "i") }));
+      fireEvent.click(screen.getByRole("button", { name: `Add Plan ${index} to your selection` }));
     }
 
     expect(screen.getByText("10 of 10 selected")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /plan 11/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Plan 11 to your selection" })).toBeDisabled();
   });
 });
