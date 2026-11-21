@@ -253,10 +253,10 @@ export default function MomentVote({ moment }: { moment: Moment }) {
                   aria-expanded={detailsOpen}
                   onPointerDown={(event) => event.stopPropagation()}
                   onClick={() => setDetailsOpen(true)}
-                  className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 text-xs font-extrabold text-[#005CB4] transition hover:border-blue-200 hover:bg-blue-50"
+                  className="mt-3 inline-flex min-h-8 items-center gap-1.5 text-xs font-semibold text-slate-400 transition hover:text-[#005CB4]"
                 >
-                  <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg>
-                  View plan details
+                  <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg>
+                  Details
                 </button>
               </div>
             </article>
