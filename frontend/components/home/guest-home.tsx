@@ -92,8 +92,7 @@ function RoomSection({ title, rooms }: { title: string; rooms: GuestRoom[] }) {
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-xs font-extrabold text-[#005CB4]">{room.vibe_name}</p>
-                <h3 className="mt-1 text-lg font-extrabold text-slate-950 transition group-hover:text-[#005CB4]">{room.title}</h3>
+                <h3 className="text-lg font-extrabold text-slate-950 transition group-hover:text-[#005CB4]">{room.title}</h3>
                 <p className="mt-2 text-sm text-slate-500">{room.participant_count} participants · {room.plan_count} plans</p>
               </div>
               <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600">{statusCopy[room.status]}</span>
