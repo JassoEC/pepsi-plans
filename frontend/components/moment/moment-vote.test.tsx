@@ -99,6 +99,25 @@ describe("MomentVote", () => {
     );
   });
 
+  it("uses Pepsi Boost when the guest swipes up in the dedicated gesture area", async () => {
+    vi.mocked(submitMomentVote).mockResolvedValue({ ok: true });
+    render(<MomentVote moment={moment} />);
+
+    const gestureArea = screen.getByRole("group", { name: "Pepsi Boost gesture area" });
+    fireEvent.pointerDown(gestureArea, { pointerId: 1, pointerType: "touch", clientX: 100, clientY: 120 });
+    fireEvent.pointerMove(gestureArea, { pointerId: 1, pointerType: "touch", clientX: 104, clientY: 35 });
+    fireEvent.pointerUp(gestureArea, { pointerId: 1, pointerType: "touch", clientX: 104, clientY: 35 });
+
+    await waitFor(() => {
+      expect(submitMomentVote).toHaveBeenCalledWith(
+        moment.id,
+        moment.plans[0].id,
+        "boost",
+      );
+      expect(screen.getByRole("heading", { name: "Little Havana food crawl" })).toBeInTheDocument();
+    });
+  });
+
   it("shows the completion state after all plans are rated", async () => {
     vi.mocked(submitMomentVote).mockResolvedValue({ ok: true });
     render(<MomentVote moment={moment} />);
