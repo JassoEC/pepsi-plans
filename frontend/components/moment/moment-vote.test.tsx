@@ -66,6 +66,21 @@ describe("MomentVote", () => {
     expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "0");
   });
 
+  it("opens the full plan details and returns to the same voting card", () => {
+    render(<MomentVote moment={moment} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "View details for Sunset picnic" }));
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Sunset picnic" })).toBeInTheDocument();
+    expect(screen.getByText("Pick up snacks and enjoy the sunset.")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Close plan details" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Like plan" })).toBeInTheDocument();
+  });
+
   it("saves a vote and advances to the next plan without reloading", async () => {
     vi.mocked(submitMomentVote).mockResolvedValue({ ok: true });
     render(<MomentVote moment={moment} />);
