@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/app/guest-actions", () => ({ registerGuest: vi.fn() }));
@@ -53,6 +53,8 @@ describe("GuestHome", () => {
 
     const card = screen.getByRole("link", { name: /open saturday with friends, open moment/i });
     expect(card).toHaveAttribute("href", `/moment/${room.id}`);
+    expect(within(card).getByRole("heading", { name: room.title })).toBeInTheDocument();
+    expect(within(card).queryByText(room.vibe_name)).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /view and share/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /add my votes/i })).not.toBeInTheDocument();
     expect(screen.queryByText("Open Moment")).not.toBeInTheDocument();
