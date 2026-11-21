@@ -180,8 +180,8 @@ export default function MomentDetail({ moment }: { moment: Moment }) {
         <section className="mt-9">
           <div className="mb-5">
             <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#005CB4]">The lineup</p>
-            <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-950">{isOpen ? "What's winning?" : "The final results"}</h2>
-            <p className="mt-1 text-sm text-slate-500">{isOpen ? "See which experiences are winning your crew over." : "Here's how your crew voted."}</p>
+            <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-950">{moment.is_host && isOpen ? "What's winning?" : isOpen ? "The crew's favorites" : "The final results"}</h2>
+            <p className="mt-1 text-sm text-slate-500">{isOpen ? "See how the group is leaning so far." : "Here's how your crew voted."}</p>
           </div>
           <div className="space-y-5">
             {moment.plans.map((plan) => {
