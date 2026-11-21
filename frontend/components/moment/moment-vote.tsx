@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useTransition, type PointerEvent } from "react";
+import { useRef, useState, useTransition, type KeyboardEvent, type PointerEvent } from "react";
 
 import { submitMomentVote } from "@/app/moment-actions";
 
@@ -138,6 +138,7 @@ export default function MomentVote({ moment }: { moment: Moment }) {
   function handleBoostPointerDown(event: PointerEvent<HTMLDivElement>) {
     if (!isOpen || isPending || currentPlan?.my_vote || boostUsed) return;
     event.stopPropagation();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
     boostPointerStart.current = { x: event.clientX, y: event.clientY };
   }
 
@@ -159,7 +160,7 @@ export default function MomentVote({ moment }: { moment: Moment }) {
     }
   }
 
-  function handleBoostKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+  function handleBoostKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if ((event.key === "Enter" || event.key === " ") && currentPlan && isOpen && !isPending && !currentPlan.my_vote && !boostUsed) {
       event.preventDefault();
       handleVote(currentPlan.id, "boost");
