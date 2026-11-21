@@ -3,8 +3,6 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import MomentInvite from "@/components/moment/moment-invite";
 
-export const dynamic = "force-dynamic";
-
 export default async function InvitePage({
   params,
 }: {
