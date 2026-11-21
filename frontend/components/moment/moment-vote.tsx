@@ -68,6 +68,7 @@ export default function MomentVote({ moment }: { moment: Moment }) {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isPending, startTransition] = useTransition();
   const pointerStartX = useRef<number | null>(null);
+  const boostPointerStart = useRef<{ x: number; y: number } | null>(null);
 
   const isOpen = moment.status === "draft" || moment.status === "ready" || moment.status === "voting";
   const ratedCount = plans.filter((plan) => plan.my_vote !== null).length;
@@ -132,6 +133,37 @@ export default function MomentVote({ moment }: { moment: Moment }) {
 
     setSwipeOffset(distance > 0 ? 420 : -420);
     handleVote(currentPlan.id, distance > 0 ? "like" : "dislike");
+  }
+
+  function handleBoostPointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (!isOpen || isPending || currentPlan?.my_vote || boostUsed) return;
+    event.stopPropagation();
+    boostPointerStart.current = { x: event.clientX, y: event.clientY };
+  }
+
+  function handleBoostPointerMove(event: PointerEvent<HTMLDivElement>) {
+    if (!boostPointerStart.current) return;
+    event.stopPropagation();
+  }
+
+  function handleBoostPointerUp(event: PointerEvent<HTMLDivElement>) {
+    const start = boostPointerStart.current;
+    boostPointerStart.current = null;
+    event.stopPropagation();
+    if (!start || !currentPlan || !isOpen || isPending || currentPlan.my_vote || boostUsed) return;
+
+    const deltaX = event.clientX - start.x;
+    const deltaY = event.clientY - start.y;
+    if (deltaY <= -65 && Math.abs(deltaY) > Math.abs(deltaX)) {
+      handleVote(currentPlan.id, "boost");
+    }
+  }
+
+  function handleBoostKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    if ((event.key === "Enter" || event.key === " ") && currentPlan && isOpen && !isPending && !currentPlan.my_vote && !boostUsed) {
+      event.preventDefault();
+      handleVote(currentPlan.id, "boost");
+    }
   }
 
   function moveToPlan(direction: -1 | 1) {
@@ -245,6 +277,27 @@ export default function MomentVote({ moment }: { moment: Moment }) {
                 {currentPlan.short_insight ? <p className="text-base font-extrabold leading-6 text-slate-900">{currentPlan.short_insight}</p> : null}
                 {currentPlan.description ? <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-500">{currentPlan.description}</p> : null}
               </div>
+              {isOpen && !currentPlan.my_vote && !boostUsed ? (
+                <div
+                  role="group"
+                  aria-label="Pepsi Boost gesture area"
+                  onPointerDown={handleBoostPointerDown}
+                  onPointerMove={handleBoostPointerMove}
+                  onPointerUp={handleBoostPointerUp}
+                  onPointerCancel={(event) => {
+                    event.stopPropagation();
+                    boostPointerStart.current = null;
+                  }}
+                  onKeyDown={handleBoostKeyDown}
+                  tabIndex={0}
+                  className="touch-none border-t border-slate-100 bg-[#F7FAFE] px-5 py-3 text-center outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0878C9]"
+                >
+                  <span className="inline-flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#0878C9]">
+                    <svg viewBox="0 0 20 20" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10 16V4m-5 5 5-5 5 5" /></svg>
+                    Swipe up here for Pepsi Boost
+                  </span>
+                </div>
+              ) : null}
             </article>
 
             {error ? <p role="alert" className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{error}</p> : null}
