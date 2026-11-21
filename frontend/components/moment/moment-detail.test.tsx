@@ -68,6 +68,38 @@ describe("MomentDetail", () => {
     expect(screen.getByRole("link", { name: "Add my votes" })).toBeInTheDocument();
   });
 
+  it("ranks plans by votes and keeps original order for ties", () => {
+    render(
+      <MomentDetail
+        moment={{
+          ...baseMoment,
+          plans: [
+            { ...baseMoment.plans[0], vote_count: 2 },
+            { ...baseMoment.plans[1], vote_count: 5 },
+          ],
+        }}
+      />,
+    );
+
+    const planTitles = screen.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent);
+    expect(planTitles).toEqual(["Sunset boat cruise", "Paddleboard on Biscayne Bay"]);
+    expect(screen.getByLabelText("5 votes, 100% of the leading plan's votes")).toBeInTheDocument();
+    expect(screen.getByLabelText("2 votes, 40% of the leading plan's votes")).toBeInTheDocument();
+  });
+
+  it("keeps all progress bars empty when no votes have been cast", () => {
+    render(
+      <MomentDetail
+        moment={{
+          ...baseMoment,
+          plans: baseMoment.plans.map((plan) => ({ ...plan, vote_count: 0 })),
+        }}
+      />,
+    );
+
+    expect(screen.getAllByRole("img", { name: /0 votes, 0%/ })).toHaveLength(2);
+  });
+
   it("shows the same simplified Moment card to guests without host controls", () => {
     render(
       <MomentDetail
