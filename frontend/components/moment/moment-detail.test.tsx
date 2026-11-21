@@ -77,7 +77,7 @@ describe("MomentDetail", () => {
     );
 
     expect(screen.getByText("You're part of this Moment. See what your crew is vibing with.")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "The final results" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "The crew's favorites" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /copy invitation link/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Add my votes" })).not.toBeInTheDocument();
     expect(screen.getByText("MJ")).toBeInTheDocument();
