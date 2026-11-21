@@ -14,6 +14,8 @@ vi.mock("@/app/actions", () => ({
 
 const mockedGetMorePlans = vi.mocked(getMorePlans);
 
+afterEach(() => cleanup());
+
 function makePlans(count: number, startAt = 1): Plan[] {
   return Array.from({ length: count }, (_, index) => ({
     id: `plan-${startAt + index}`,
@@ -60,7 +62,7 @@ describe("PlanDiscovery", () => {
     expect(screen.getByText("You've seen all the ideas for this Vibe.")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Add Plan 6 to your selection" }));
-    fireEvent.click(screen.getByRole("button", { name: /review 2 plans/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Review 2 selected plans" }));
 
     expect(screen.getByText("Your shortlist is ready.")).toBeInTheDocument();
     expect(screen.getByText("Plan 1")).toBeInTheDocument();
@@ -95,14 +97,14 @@ describe("PlanDiscovery", () => {
       />,
     );
 
-    const continueButton = screen.getByRole("button", { name: /review 0 plans/i });
+    const continueButton = screen.getByRole("button", { name: "Review 0 selected plans" });
     expect(continueButton).toBeDisabled();
 
     fireEvent.click(screen.getByRole("button", { name: "Add Plan 1 to your selection" }));
-    expect(screen.getByRole("button", { name: /review 1 plans/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Review 1 selected plans" })).toBeDisabled();
 
     fireEvent.click(screen.getByRole("button", { name: "Add Plan 2 to your selection" }));
-    expect(screen.getByRole("button", { name: /review 2 plans/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Review 2 selected plans" })).toBeEnabled();
   });
 
   it("prevents selecting more than ten plans", () => {
