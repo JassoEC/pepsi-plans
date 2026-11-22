@@ -50,7 +50,7 @@ describe("PlanDiscovery", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Add Plan 1 to your selection" }));
-    fireEvent.click(screen.getByRole("button", { name: "Get more suggestions", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: /^Get more suggestions$/ }));
 
     expect(mockedGetMorePlans).toHaveBeenCalledWith(
       "20000000-0000-4000-8000-000000000001",
