@@ -66,48 +66,40 @@ export default function GuestHome({ dashboard }: Props) {
         </div>
         <Link href="/create" className="inline-flex items-center justify-center rounded-full bg-[#005CB4] px-6 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#004A91]">+ Create a Moment</Link>
       </div>
-      <div className="mt-10 grid gap-8 md:grid-cols-2">
-        <RoomSection title="Your Moments" rooms={dashboard.hosted} empty="No Moments yet. Bring your friends together and make one happen." />
-        <RoomSection title="Moments you have joined" rooms={dashboard.joined} empty="No invitations yet. When you join a friends Moment, you will find it here." />
+      <div className="mt-10 space-y-9">
+        {dashboard.hosted.length > 0 ? (
+          <RoomSection title="Your Moments" rooms={dashboard.hosted} />
+        ) : null}
+        {dashboard.joined.length > 0 ? (
+          <RoomSection title="Moments you've joined" rooms={dashboard.joined} />
+        ) : null}
       </div>
     </section>
   );
 }
 
-function RoomSection({ title, rooms, empty }: { title: string; rooms: GuestRoom[]; empty: string }) {
+function RoomSection({ title, rooms }: { title: string; rooms: GuestRoom[] }) {
   return (
-    <div>
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-lg font-extrabold text-slate-950">{title}</h2>
-        <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-[#005CB4]">{rooms.length}</span>
+    <section aria-label={title}>
+      <h2 className="mb-4 text-xl font-black text-slate-950">{title}</h2>
+      <div className="space-y-3">
+        {rooms.map((room) => (
+          <Link
+            key={room.id}
+            href={`/moment/${room.id}`}
+            className="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005CB4] focus-visible:ring-offset-2 active:translate-y-0"
+            aria-label={`Open ${room.title}, ${statusCopy[room.status]} Moment`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="text-lg font-extrabold text-slate-950 transition group-hover:text-[#005CB4]">{room.title}</h3>
+                <p className="mt-2 text-sm text-slate-500">{room.participant_count} participants · {room.plan_count} plans</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600">{statusCopy[room.status]}</span>
+            </div>
+          </Link>
+        ))}
       </div>
-      {rooms.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-sm leading-6 text-slate-500">{empty}</div>
-      ) : (
-        <div className="space-y-3">
-          {rooms.map((room) => (
-            <article key={room.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <Link href={`/moment/${room.id}`} className="font-bold text-slate-900 hover:text-[#005CB4] hover:underline">{room.title}</Link>
-                  <p className="mt-1 text-xs font-semibold text-[#005CB4]">{room.vibe_name}</p>
-                  <p className="mt-1 text-xs text-slate-500">{room.participant_count} participants · {room.plan_count} plans</p>
-                </div>
-                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{statusCopy[room.status]}</span>
-              </div>
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                <p className="text-xs text-slate-400">{new Date(room.created_at).toLocaleDateString()}</p>
-                <div className="flex flex-wrap gap-2">
-                  <Link href={`/moment/${room.id}`} className="rounded-full border border-[#005CB4] px-4 py-2 text-xs font-bold text-[#005CB4] transition hover:bg-blue-50">View and share</Link>
-                  {room.status !== "completed" && room.status !== "expired" ? (
-                    <Link href={`/moment/${room.id}/vote`} className="rounded-full bg-[#005CB4] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#004A91]">Add my votes</Link>
-                  ) : null}
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
-    </div>
+    </section>
   );
 }
