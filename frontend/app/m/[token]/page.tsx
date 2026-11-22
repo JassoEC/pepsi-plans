@@ -3,6 +3,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import MomentInvite from "@/components/moment/moment-invite";
 
+export const instant = false;
+
 export default async function InvitePage({
   params,
 }: {
