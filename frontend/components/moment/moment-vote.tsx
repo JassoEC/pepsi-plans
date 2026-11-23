@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef, useState, useTransition, type PointerEvent } from "react";
 
 import { submitMomentVote } from "@/app/moment-actions";
+import PepsiLogo from "@/components/brand/pepsi-logo";
 
 type VoteAction = "like" | "dislike" | "boost";
 type Plan = {
@@ -146,7 +147,7 @@ export default function MomentVote({ moment }: { moment: Moment }) {
     <main className="relative mx-auto flex min-h-[100svh] w-full max-w-xl flex-1 flex-col overflow-hidden bg-[#F4F7FB] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 sm:px-6 sm:pt-6">
       <header className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5" aria-label="Pepsi Moments home">
-          <span className="flex size-9 items-center justify-center rounded-full bg-[#005CB4] text-lg font-black italic text-white shadow-sm">P</span>
+          <PepsiLogo size={40} />
           <span className="text-lg font-extrabold tracking-tight text-slate-950">Pepsi <span className="text-[#005CB4]">Moments</span></span>
         </Link>
         <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-extrabold tracking-[0.14em] text-slate-500">THE LINEUP</span>
@@ -313,7 +314,7 @@ export default function MomentVote({ moment }: { moment: Moment }) {
                     aria-label={boostUsed ? "Pepsi Boost already used" : "Pepsi Boost"}
                     disabled={isPending || boostUsed}
                     onClick={() => handleVote(currentPlan.id, "boost")}
-                    className="flex size-12 items-center justify-center rounded-full bg-[#0878C9] text-white shadow-lg shadow-blue-900/20 transition hover:-translate-y-1 hover:bg-[#0066B3] disabled:cursor-not-allowed disabled:opacity-40 sm:size-14"
+                    className="flex size-12 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-[#E31B54] via-[#005CB4] to-[#071B3A] text-white shadow-[0_0_0_3px_rgba(0,92,180,0.14),0_10px_24px_-8px_rgba(0,48,100,0.65)] transition hover:-translate-y-1 hover:shadow-[0_0_0_4px_rgba(227,27,84,0.16),0_14px_28px_-8px_rgba(0,48,100,0.7)] disabled:cursor-not-allowed disabled:opacity-40 sm:size-14"
                   >
                     <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="m13 2-3 8h7l-6 12 1-9H5l8-11Z"/></svg>
                   </button>
@@ -328,7 +329,7 @@ export default function MomentVote({ moment }: { moment: Moment }) {
                   </button>
                 </div>
                 <div className="mt-3 flex items-center justify-center gap-8 text-[9px] font-extrabold uppercase tracking-[0.14em] text-slate-400">
-                  <span>Pass</span><span className={boostUsed ? "text-slate-300" : "text-[#0878C9]"}>Boost</span><span>Like</span>
+                  <span>Pass</span><span className={boostUsed ? "text-slate-300" : "bg-gradient-to-r from-[#E31B54] to-[#005CB4] bg-clip-text text-transparent"}>Boost</span><span>Like</span>
                 </div>
                 <p className="mt-3 text-center text-[11px] text-slate-400">{boostUsed ? "Your Boost has been used. You can still Like or Pass." : "One Pepsi Boost per person. Make it count."}</p>
               </div>
