@@ -20,7 +20,7 @@ The goal is not to make Pepsi an ad placed next to the experience. Pepsi becomes
 
 ## Try the experience
 
-- **Live demo:** [Add the deployed URL]
+- **Live demo:** https://pepsi-plans.netlify.app/
 - **Repository:** https://github.com/JassoEC/pepsi-plans
 
 The prototype uses curated sample experiences and illustrative imagery. It does not claim live venue availability or reservations.
