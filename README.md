@@ -1,299 +1,286 @@
-# Pepsi Plans
+# Pepsi Moments
 
-**Make Pepsi Part of the Moment**
+**Make Pepsi Part of the Moment.**
 
-A mobile-first group-planning experience that helps friends in Miami move from “What should we do?” to a shared plan, with Pepsi acting as a natural cultural curator.
+> From “What should we do?” to “Let's make it a moment.”
 
-> **Project status:** Initial product and technical proposal. This document separates Spotdly's original challenge brief from the product decisions proposed for this prototype.
+Pepsi Moments is a mobile-first group experience for discovering things to do in Miami, sharing a room with friends, and choosing a plan together. Instead of another endless group chat, everyone reacts to the same curated set of experiences and the group gets a result shaped by its preferences.
 
-## 1. Original challenge brief
+**Built for the Spotdly creative challenge.** Spotdly is the creative studio behind the brief; **Pepsi Moments** is the name of this product concept.
 
-The following is the challenge brief provided by Spotdly, preserved in its original language.
+<!-- Add a current product screenshot or short demo GIF here. -->
 
-### El reto: Make Pepsi Part of the Moment
+## The idea
 
-En Spotdly estamos construyendo un estudio creativo digital que mezcla creatividad, tecnología, cultura y negocio. Nos interesa crear experiencias que no solo funcionen técnicamente, sino que las personas realmente quieran usar.
+**Turn making plans into a social game.**
 
-Imagina que **Pepsi** quiere conectar con personas en Miami a través de una experiencia digital para descubrir planes y compartirlos con amigos.
+One friend starts a Moment, picks a Pepsi Vibe, curates a deck of Miami plans and shares a link. Friends join from their phones, swipe through the same options and vote. Likes, dislikes and a one-time Pepsi Boost turn individual reactions into a shared ranking.
 
-El problema es que muchas veces decidir qué hacer en grupo termina en un intercambio interminable de mensajes: cada persona propone algo distinto, no hay claridad sobre las preferencias y nadie termina tomando una decisión.
+The goal is not to make Pepsi an ad placed next to the experience. Pepsi becomes **The Insider**: a point of view that helps the group discover a mood, explore Miami and make a moment together.
 
-Tu desafío es crear un **prototipo web funcional** que ayude a un grupo de amigos a pasar de “¿qué hacemos?” a elegir un plan, integrando a Pepsi de una manera que tenga sentido dentro de la experiencia.
+## Try the experience
 
-La experiencia debe sentirse pensada para la marca y para las personas que la van a utilizar. Puede ser algo sencillo, pero debe demostrar una idea clara y funcionar lo suficientemente bien como para que podamos probarla.
+- **Live demo:** [Add the deployed URL]
+- **Repository:** https://github.com/JassoEC/pepsi-plans
 
-**Restricciones:**
-- Debe poder usarse desde un teléfono, sin descargar una aplicación.
-- Una persona debe poder iniciar la experiencia y compartirla con otras personas mediante un enlace.
-- Las personas deben poder expresar sus preferencias y llegar a un resultado o recomendación compartida. Tú decides cómo funciona la dinámica.
-- El resultado debe reflejar las preferencias recibidas. Explica la lógica detrás de tu solución.
-- Puedes usar datos de ejemplo y simular servicios externos. No necesitas integrar eventos reales ni crear cuentas de usuario.
-- No es necesario procesar pagos ni recopilar datos personales reales.
-- La primera versión debe ser una base razonable para desarrollar una experiencia real, no solo una presentación visual.
+The prototype uses curated sample experiences and illustrative imagery. It does not claim live venue availability or reservations.
 
-**Queremos ver:**
-1. La idea. Resume en una frase qué construiste y por qué alguien querría usarlo.
-2. La experiencia. Muéstranos el recorrido desde que una persona inicia el plan hasta que el grupo obtiene un resultado. ¿Cómo se integra Pepsi de forma natural?
-3. El problema técnico. ¿Cómo compartes el estado entre participantes y cómo manejas situaciones como una persona que llega tarde, recarga la página o envía una respuesta más de una vez? Si decides no resolver alguna, cuéntanos cómo la abordarías.
-4. El criterio. ¿Qué decisiones tomaste sobre tecnologías, estructura y datos? ¿Qué priorizaste y qué dejaste fuera para esta primera versión?
-5. Las pruebas. Muéstranos cómo comprobaste que la experiencia funciona. Incluye al menos una prueba que cubra una parte importante de la lógica y explica brevemente qué otras situaciones probarías antes de lanzar.
-6. Pensando en escala. Si Pepsi quisiera lanzar la experiencia para miles de personas, ¿qué tendrías que cambiar o revisar en seguridad, rendimiento y confiabilidad? No esperamos que construyas esa infraestructura; queremos entender tu razonamiento.
+## How it works
 
----
+### 1. Create a Moment
 
-## 2. The idea
+The host creates a room, chooses a Pepsi Vibe and explores curated Miami plans. Discovery is presented in small batches so the host can build a focused deck without losing previous selections.
 
-**Pepsi Plans turns group decision-making into a shared, lightweight game: friends react to a curated deck of Miami experiences and get a recommendation shaped by the group's votes.**
+### 2. Make it yours
 
-The host creates a moment, chooses its Pepsi Vibe, selects a small set of plans, and shares a link. Everyone votes independently. The group sees the plans ranked by collective preference.
+The host selects between 2 and 10 plans and shares the Moment link through any messaging app. Once voting starts, the deck is locked so everyone is reacting to the same options.
 
-### Product principles
+### 3. Let everyone have a say
 
-- **Frictionless:** mobile web, shared link, no installation or account creation.
-- **Social by design:** each person contributes a preference; no one has to negotiate in a long chat thread.
-- **Transparent:** the outcome is explainable from the votes received.
-- **Brand-native:** Pepsi helps people discover the mood and local culture rather than interrupting the experience with an ad.
-- **Prototype-ready:** curated sample data is enough to test the complete experience.
+Friends open the link on mobile web, join with a temporary identity and vote on each plan:
 
-## 3. Product experience
+| Reaction | Points | Meaning |
+|---|---:|---|
+| Dislike | -1 | Not for me |
+| Like | +1 | I'm interested |
+| Pepsi Boost | +3 | This is the one I'd love to do |
 
-### Host flow
+Each participant gets one Pepsi Boost per Moment. The Boost is a stronger vote, not an automatic win.
 
-1. Create a moment and receive a unique shareable URL.
-2. Choose a Pepsi Vibe.
-3. Browse curated Miami recommendations in batches of five.
-4. Build a deck of 2–10 plans. Requesting another batch must not erase existing selections.
-5. Share the room through any messaging app.
-6. Start voting. The deck is frozen from this point so all participants vote on the same options.
+### 4. Find the group's plan
 
-### Participant flow
+Plans are ranked using the votes received. The group can see which experiences resonated most and the host can close voting to reveal the final result.
 
-1. Open the shared link on a phone.
-2. Join with a browser-profile-scoped temporary identity; no account is required.
-3. Review the same deck as every other participant.
-4. Vote once on each plan.
-5. Follow group progress and see the final recommendation when voting is complete or the host closes the room.
+## Pepsi, naturally part of the moment
 
-Participants who arrive late can join while the room is in the voting state and vote on the existing deck. Refreshing the page must recover their temporary identity and previously recorded votes.
+Pepsi Vibes give each Moment a recognizable mood and guide the discovery experience.
 
-### Plan cards
-
-Each card contains a plan name and category, image, Miami neighborhood, indicative budget and a short **Pepsi Insight**. An affordance expands the card to show editorial description and practical details.
-
-## 4. Pepsi integration: Pepsi Vibes
-
-The host chooses one Vibe for the room. Vibes are catalog entities that can be activated, retired or rotated seasonally without changing the schema. In the current MVP, each plan belongs to exactly one Vibe, while each Vibe can curate many plans. A room stores the selected `vibe_id` so its context remains stable.
-
-| Vibe | Direction | Example plan types |
+| Vibe | Mood | Discovery direction |
 |---|---|---|
-| **Pepsi Original** | Classic, iconic and culturally recognizable | Restaurants, landmarks and signature local experiences |
+| **Pepsi Original** | Classic, iconic and culturally recognizable | Signature local experiences, food and landmarks |
 | **Pepsi Zero Sugar** | Active, daytime and exploratory | Outdoor activities, sports and cultural exploration |
-| **Pepsi Wild Cherry** | Expressive, social and unexpected | Nightlife, live music and unconventional experiences |
+| **Pepsi Wild Cherry** | Expressive, social and unexpected | Nightlife, live music and unconventional plans |
 
-Initial discovery areas: **Wynwood, Little Havana, Brickell and South Beach**.
+Pepsi also appears through **Pepsi Insights**: short editorial cues attached to plans. The brand adds personality and discovery value without interrupting the decision flow.
 
-Pepsi's role is **The Insider**: a curator that helps the group find an experience matching its mood. The brand should add context and discovery value, not interrupt the task.
+The sample catalog explores Miami areas such as Wynwood, Little Havana, Brickell and South Beach.
 
-## 5. Voting mechanics
+## How the group result is calculated
 
-Each participant can submit one vote per plan:
+Every plan receives a score based on the group's reactions:
 
-| Action | Score |
-|---|---:|
-| Dislike | -1 |
-| Like | +1 |
-| Pepsi Boost | +3 |
+`Score = Likes + (Pepsi Boosts × 3) - Dislikes`
 
-Each participant has exactly **one Pepsi Boost per room**. The Boost is an enhanced vote, not an automatic winner.
+The ranking uses these tie-breakers, in order:
 
-The Boost is consumed only after the server confirms that the vote was successfully recorded. Its UI state progresses from available, to activated on the selected card, to consumed and disabled for the rest of the room.
-
-There is intentionally no rewind in the first version. This keeps the interaction simple and avoids ambiguous vote replacement rules.
-
-### Ranking
-
-For every plan:
-
-`Score = Likes + (Boosts × 3) - Dislikes`
-
-Plans are ordered by:
 1. Highest total score.
-2. Highest number of Boosts.
+2. Highest number of Pepsi Boosts.
 3. Highest number of Likes.
 
-If all three criteria are equal, the result is a shared tie. The application must not invent a winner based on arbitrary ordering.
+If all three values are equal, the plans remain tied. The experience does not manufacture a winner from an arbitrary sort order.
 
-## 6. Room lifecycle and rules
+A participant can vote once per plan and use no more than one Boost per Moment. The Boost is only considered consumed after the server confirms the vote.
 
-Proposed lifecycle:
+## Product and engineering decisions
+
+The prototype prioritizes a complete shared flow over a broad feature set: create a Moment, curate options, invite friends, vote and reach a group result.
+
+### Stack
+
+| Area | Technology | Reason |
+|---|---|---|
+| Web app | Next.js 16 App Router | Shareable routes and a mobile-first web experience |
+| Language | TypeScript | Explicit contracts and safer changes |
+| UI | React 19 + Tailwind CSS 4 | Fast product iteration and responsive styling |
+| Data | Supabase PostgreSQL | Persistent shared state and relational constraints |
+| Client/server integration | Supabase JS + `@supabase/ssr` | Server and browser clients |
+| Live synchronization | Supabase Realtime | Keep participants informed as the Moment changes |
+| Critical domain operations | PostgreSQL functions (RPC) | Validate room access and voting rules close to the data |
+| Validation | Zod | Validate untrusted inputs at application boundaries |
+| Tests | Vitest | Exercise important domain behavior |
+
+### Shared state and participant identity
+
+PostgreSQL is the source of truth. Realtime is used to notify connected clients that a Moment has changed; clients must rely on persisted state rather than treating a notification as proof that a write succeeded.
+
+The application uses temporary, browser-scoped visitor identity rather than requiring a full account. A visitor can return from the same browser profile and continue their participation. A shared room URL identifies the Moment, but it is not sufficient authorization to cast votes: server-side operations also validate the visitor identity and room membership.
+
+The database protects important invariants, including one vote per participant and plan, room lifecycle rules, and the one-Boost-per-participant limit. Critical operations are handled server-side so clients cannot award themselves points or bypass the voting rules.
+
+### Late arrivals, refreshes and repeated actions
+
+- **Late arrival:** a participant can join an active voting Moment and receive the current deck.
+- **Refresh or reopen:** the browser-scoped identity and persisted votes allow the participant to recover their place in the Moment.
+- **Repeated vote:** the database uniqueness rule prevents a second vote for the same participant and plan.
+- **Boost reuse:** the server checks and records Boost usage as part of the voting operation.
+- **Room closure:** completed or expired Moments stop accepting votes.
+
+If a visitor clears browser storage/cookies or switches to another browser or device, their temporary identity may not be recoverable. Cross-device identity recovery is intentionally outside this account-free prototype.
+
+## Room lifecycle
+
+A Moment follows a small set of explicit states:
 
 `DRAFT → READY → VOTING → COMPLETED → EXPIRED`
 
-| State | Meaning |
+| State | Behavior |
 |---|---|
-| `DRAFT` | Host is choosing a Vibe and curating plans. |
-| `READY` | Deck is valid and can be shared. |
-| `VOTING` | Participants can join and submit votes; the deck is immutable. |
-| `COMPLETED` | Voting is closed and results are finalized. |
-| `EXPIRED` | Room is no longer available. |
+| `DRAFT` | Host configures the Moment and curates plans |
+| `READY` | The deck is valid and ready to share/start |
+| `VOTING` | Participants can join and vote; the deck is fixed |
+| `COMPLETED` | Voting is closed and results can be reviewed |
+| `EXPIRED` | The Moment is no longer available |
 
-Only the host can edit the deck, and only before voting starts. The deck must contain 2–10 plans before voting begins. Participants can join a room in `VOTING` until it is completed or expired. State transitions and voting rules are validated by the server, not trusted to the browser.
+The host is also a participant and can vote. Only the host can start or close the Moment. The deck cannot be changed after voting begins.
 
-## 7. Technical proposal
+## Run locally
 
-### Proposed stack
+### Requirements
 
-| Concern | Proposal | Why |
-|---|---|---|
-| Web application | Next.js App Router | One application for shareable routes and server-rendered experiences |
-| Language | TypeScript, strict mode | Safer domain logic and contracts |
-| Styling | Tailwind CSS | Fast iteration on a responsive interface |
-| Database | Supabase PostgreSQL | Relational consistency and transactional operations |
-| Live updates | Supabase Realtime | Reflect votes and room progress across participants |
-| Critical operations | Server-side functions / PostgreSQL RPC | Enforce room, vote and Boost rules atomically |
-| Access control | PostgreSQL Row Level Security | Protect room and participant data |
-| Unit tests | Vitest | Test scoring and domain rules independently |
+- Node.js (use the version specified by the repository's `.nvmrc`, if present)
+- npm
+- Docker
+- Supabase CLI
 
-This is a proposal, not a claim that these technologies are already implemented. The final stack may be adjusted to the repository's existing setup before implementation.
+### 1. Install dependencies
 
-### Conceptual data model
+From the repository root:
 
-| Entity | Responsibility |
-|---|---|
-| `users` | Temporary visitor identity, display name and hashed session token |
-| `vibes` | Dynamic Pepsi Vibe catalog, including activation and optional validity dates |
-| `rooms` | Room identifier, `host_user_id`, selected `vibe_id`, state and expiration |
-| `room_participants` | Membership of a user in a room and room-specific Boost usage |
-| `plans` | Curated Miami experiences and editorial content; each plan references one `vibe_id` |
-| `room_plans` | Snapshot of plans selected for a specific room |
-| `votes` | One participant's decision for one plan in one room |
+```bash
+cd frontend
+npm install
+```
 
-Important constraints:
-- Unique room membership per `(room_id, user_id)`.
-- Unique vote per `(room_participant_id, plan_id)`.
-- At most one Boost per room membership (`room_participants.boost_used_at`).
-- `rooms.host_user_id` references the temporary user who created the room.
-- Each plan belongs to one Vibe in the MVP; a Vibe can have multiple plans.
-- A room's selected deck is immutable after entering `VOTING`.
-- Vote values are represented by a constrained action type; clients never submit a calculated score.
-- The room-specific plan snapshot prevents catalog edits from changing an active room.
+### 2. Start Supabase
 
-### State synchronization and reliability
+From the repository root:
 
-The database is the source of truth. Realtime events notify clients that data changed; they are not proof that a vote was accepted.
+```bash
+supabase start
+```
 
-Critical vote operations should be transactional:
-1. Validate that the room is accepting votes.
-2. Validate the user's session token and room membership, and that the membership has not voted for that plan.
-3. Validate Boost availability when the action is a Boost.
-4. Insert the vote and update Boost usage atomically.
-5. Return the persisted result.
+Apply migrations and seed the local catalog:
 
-This protects against duplicate submissions, concurrent Boost attempts and forged client-side scores.
+```bash
+supabase db reset
+```
 
-When a visitor first enters the app and provides a display name, the server creates a browser-profile-scoped temporary user identity and issues an opaque, cryptographically random token. Only its hash is stored in `users`; the raw token is set in a persistent Secure, HttpOnly, SameSite=Lax cookie with a 30-day lifetime. This is intentionally not a browser-session cookie: closing a tab, browser or shared room link must not discard the identity. On a later visit from the same browser profile, the cookie lets the server recover the same user and their room memberships and votes. The 30-day lifetime is renewed on valid activity; inactive temporary identities can be cleaned up after expiration. If the user clears cookies, uses private browsing or switches devices/browsers, the identity cannot be recovered in this account-free MVP. When that user creates a room, `rooms.host_user_id` records the host relationship. When anyone joins a room, a `room_participants` row records membership. The public `room_id` locates a room but does not authorize voting: vote operations also validate the user's token and room membership.
+The seed includes sample Pepsi Vibes and Miami plans so the discovery flow can be explored without external integrations.
 
-## 8. Testing strategy
+### 3. Configure the frontend
 
-### Unit tests
+Copy the example environment file:
 
-- Like, Dislike and Boost score calculations.
-- Boost consumption and reuse rejection.
-- Duplicate vote prevention.
-- Ranking and tie behavior.
-- Deck minimum and maximum.
-- Room state transition rules.
+```bash
+cd frontend
+cp .env.example .env.local
+```
 
-### Integration tests
+Use the API URL and publishable key reported by `supabase status`:
 
-- Create a room and join using its shared URL.
-- Recover the same temporary user and their votes after closing and reopening the browser or shared link.
-- Submit a vote and verify it is persisted.
-- Attempt duplicate votes.
-- Attempt concurrent Boost submissions.
-- Verify Realtime updates across clients.
-- Close a room and verify final results remain consistent.
+```dotenv
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-local-supabase-publishable-key
+MOMENT_INVITE_SECRET=generate-a-random-secret-at-least-32-characters
+```
 
-### Acceptance criteria
+Generate a suitable local secret with:
 
-- Host can create a room, choose a Vibe, browse in batches of five and select 2–10 plans.
-- Host can share a unique link without requiring participants to install an app.
-- Participants join without an account and receive the same deck.
-- Each participant can vote once per plan and use no more than one Boost.
-- Refreshing does not discard recorded votes or participant identity.
-- Results follow the documented scoring and tie-breaking rules.
-- Completed and expired rooms reject new votes.
+```bash
+openssl rand -hex 32
+```
 
-## 9. Scope of the first version
+Keep `MOMENT_INVITE_SECRET` server-side. Do not commit real secrets or expose service-role keys in browser code. If the local Supabase CLI only exposes the legacy anon key, use `NEXT_PUBLIC_SUPABASE_ANON_KEY` as documented in `.env.example`.
 
-### Included
+### 4. Run the app
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+### 5. Run checks
+
+From `frontend/`:
+
+```bash
+npm run test:run
+npm run lint
+npm run build
+```
+
+To test multiple participants locally, open the app in separate browser profiles (or use a normal and a private window) and join the same shared Moment URL. Each profile represents a different temporary participant. Keep the Supabase local stack running while testing.
+
+## Testing approach
+
+The project includes automated tests for important discovery and voting behavior. Run the test suite with:
+
+```bash
+cd frontend
+npm run test:run
+```
+
+The most important behaviors to verify in a full end-to-end pass are:
+
+- A host can create a Moment, select a Vibe and curate a valid deck.
+- A participant can join from a shared link without creating an account.
+- Two browser profiles see the same Moment and shared voting progress.
+- A participant's votes survive a page refresh.
+- Duplicate votes and a second Pepsi Boost are rejected.
+- The ranking reflects the documented scoring and tie-break rules.
+- Late participants can join while voting is open.
+- Completed and expired Moments reject new votes.
+
+Before a public launch, I would add broader browser-level end-to-end coverage, concurrency tests for simultaneous Boost attempts, and recovery tests for dropped Realtime connections.
+
+## Scope and known limitations
+
+### Included in this prototype
 
 - Mobile-first web experience.
-- Temporary rooms and shareable links.
-- Curated sample catalog of Miami plans.
-- Pepsi Vibes and editorial insights.
-- Host deck creation and participant voting.
-- Shared results and live vote synchronization.
-- Core domain and integration tests.
+- Shareable Moments and temporary participant identity.
+- Curated sample Miami catalog and Pepsi Vibes.
+- Host-led deck creation.
+- Group voting with Like, Dislike and Pepsi Boost.
+- Shared progress and results.
+- Database-backed room and voting rules.
 
-### Explicitly excluded
+### Deliberately out of scope
 
-- User accounts and password flows.
-- Native mobile applications.
-- Chat or messaging features.
-- Vote rewind or vote editing.
-- Payment processing.
-- Live reservation integrations.
-- Live event discovery or third-party discovery APIs.
-- Full content-management system.
-- Complex recommendation or personalization algorithms.
-- Redis and microservices.
+- Full user accounts or cross-device identity.
+- Live event, venue availability or reservation integrations.
+- Chat or messaging.
+- Payments.
+- Production content-management tools.
+- Advanced personalization or recommendation models.
+- Large-scale load testing and production observability.
 
-The prototype may use seeded plans and simulated external services. These exclusions keep attention on the core challenge: a reliable shared decision experience.
+The sample catalog and imagery are illustrative. They are designed to make the prototype testable and communicate the concept, not to guarantee that a venue or activity is currently available.
 
-## 10. Thinking about scale
+## If Pepsi Moments scaled
 
-For a launch reaching thousands of participants, revisit:
+The prototype establishes a foundation, but a large public campaign would require additional work:
 
-- **Security:** temporary-user session tokens, host ownership checks, room membership authorization, RLS policies, rate limits, abuse prevention and protection against room enumeration.
-- **Concurrency:** transactional vote writes, unique constraints, idempotency keys and load tests for simultaneous submissions.
-- **Performance:** indexes for room and vote lookups, efficient aggregate queries, pagination for discovery and appropriate caching for the static plan catalog.
-- **Realtime reliability:** reconnect behavior, missed-event recovery from the database and limits on channel/subscription fan-out.
-- **Operations:** monitoring, structured logs, error reporting, database backups, retention policies and scheduled cleanup of expired rooms.
+- **Security:** review Row Level Security policies and RPC permissions, protect invitation/session tokens, validate host ownership, rate-limit room creation and voting, and mitigate room enumeration and automated abuse.
+- **Concurrency:** add explicit idempotency keys where appropriate, test simultaneous submissions, and verify transactional behavior under contention.
+- **Performance:** inspect query plans and indexes, optimize result aggregation, cache stable catalog content and load-test database connection limits.
+- **Realtime reliability:** implement reconnect and missed-event recovery from PostgreSQL, monitor channel fan-out and define graceful behavior when live updates are unavailable.
+- **Operations:** add structured logs, error monitoring, metrics, backups, retention rules, and scheduled cleanup for expired rooms.
+- **Content and brand operations:** introduce editorial tooling, moderation, localization and a controlled process for refreshing Vibes and curated plans.
 
-Redis, queues or a separate service should be introduced only when measured load or operational needs justify them. They are not required to prove the initial experience.
+The goal would be to scale the proven experience and its invariants, not prematurely introduce microservices or infrastructure without evidence that it is needed.
 
-## 11. Open implementation decisions
+## Use of AI
 
-The following should be settled while implementing, based on the repository and the smallest secure design:
+AI tools were used as a development partner to accelerate exploration, implementation and iteration. They helped refine the product framing, explore UX alternatives, review technical trade-offs and support debugging. Product decisions, implementation choices and verification remain the responsibility of the developer.
 
-- Whether temporary identities should support multiple browsers/devices in a later version.
-- Whether the host may also participate in voting, or is host-only.
-- Whether room completion is host-triggered, time-triggered or both.
-- The retention window for expired room data.
-- The exact Realtime channel strategy and client recovery behavior.
+## About this submission
 
-## 12. Traceability to the challenge
-
-| Spotdly asks for | Pepsi Plans proposal |
-|---|---|
-| A clear idea | Shared group-planning game based on reactions to a curated deck |
-| End-to-end experience | Host creates and shares a room; participants vote; group gets a result |
-| Natural Pepsi integration | Pepsi Vibes and The Insider editorial curation |
-| Shared state and late arrivals | Room state in PostgreSQL and joinable voting rooms |
-| Refresh and duplicate submissions | Recoverable temporary user session, room membership and unique vote constraints |
-| Technology and data decisions | Next.js, TypeScript, Supabase and a relational model |
-| Tests | Domain unit tests, integration tests and acceptance criteria |
-| Scaling considerations | Security, concurrency, performance and operational readiness |
-
-## 13. Suggested implementation milestones
-
-1. **Foundation:** repository setup, app shell, design tokens and seeded plan catalog.
-2. **Room creation:** host flow, Vibe selection, deck curation and shareable room.
-3. **Voting:** participant identity, vote persistence, Boost constraints and result calculation.
-4. **Synchronization:** Realtime updates, reconnect recovery and late joiners.
-5. **Polish and verification:** responsive/accessibility pass, tests and challenge walkthrough.
+**Product:** Pepsi Moments  
+**Creative challenge:** Spotdly — Make Pepsi Part of the Moment  
+**Repository:** [JassoEC/pepsi-plans](https://github.com/JassoEC/pepsi-plans)
 
 ---
 
-*This README describes the proposed product and engineering direction. It should be updated as implementation decisions are validated; proposed behavior must not be presented as implemented until it exists and has been tested.*
+*Pepsi Moments is a prototype concept created for the Spotdly challenge. Pepsi and its product marks belong to their respective owners. This project is an independent concept submission and is not an official Pepsi product.*
