@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getActivePlansPageByVibe } from "@/lib/catalog/plans";
 import { getActiveVibes } from "@/lib/catalog/vibes";
 import PlanDiscovery from "@/components/discovery/plan-discovery";
+import PepsiLogo from "@/components/brand/pepsi-logo";
 
 const vibeCopy: Record<string, { feeling: string; detail: string }> = {
   "pepsi-original": {
@@ -52,9 +53,7 @@ async function DiscoveryContent({
           className="flex items-center gap-2.5"
           aria-label="Pepsi Moments home"
         >
-          <span className="flex size-9 items-center justify-center rounded-full bg-[#005CB4] text-lg font-black italic text-white shadow-sm">
-            P
-          </span>
+          <PepsiLogo size={40} />
           <span className="text-lg font-extrabold tracking-tight text-slate-950">
             Pepsi <span className="text-[#005CB4]">Moments</span>
           </span>
@@ -174,9 +173,7 @@ function DiscoveryLoading() {
     >
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-full bg-[#005CB4] text-lg font-black italic text-white shadow-sm">
-            P
-          </span>
+          <PepsiLogo size={40} />
           <span className="text-lg font-extrabold tracking-tight text-slate-950">
             Pepsi <span className="text-[#005CB4]">Moments</span>
           </span>
