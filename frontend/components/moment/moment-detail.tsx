@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { getMomentInviteToken } from "@/app/actions";
 import { closeMomentVoting } from "@/app/moment-actions";
+import PepsiLogo from "@/components/brand/pepsi-logo";
 
 type MomentPlan = {
   id: string;
@@ -93,7 +94,7 @@ export default function MomentDetail({ moment }: { moment: Moment }) {
     <main className="mx-auto flex min-h-[100svh] w-full max-w-3xl flex-1 flex-col px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-5 sm:px-8 sm:pt-8">
       <header className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5" aria-label="Pepsi Moments home">
-          <span className="flex size-9 items-center justify-center rounded-full bg-[#005CB4] text-lg font-black italic text-white shadow-sm">P</span>
+          <PepsiLogo size={40} />
           <span className="text-lg font-extrabold tracking-tight text-slate-950">Pepsi <span className="text-[#005CB4]">Moments</span></span>
         </Link>
         <Link href="/" className="text-sm font-bold text-[#005CB4] hover:underline">Dashboard</Link>
