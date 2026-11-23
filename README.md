@@ -8,7 +8,16 @@ Pepsi Moments is a mobile-first group experience for discovering things to do in
 
 **Built for the Spotdly creative challenge.** Spotdly is the creative studio behind the brief; **Pepsi Moments** is the name of this product concept.
 
-<!-- Add a current product screenshot or short demo GIF here. -->
+## Product preview
+
+<p align="center">
+  <img src="docs/screenshots/choose-vibe.png" width="31%" alt="Choose a Pepsi Vibe" />
+  <img src="docs/screenshots/vote-on-plans.png" width="31%" alt="Vote on curated plans" />
+  <img src="docs/screenshots/group-results.png" width="31%" alt="Group results and plan ranking" />
+</p>
+<p align="center">
+  <sub><strong>Discover</strong> · Choose a Pepsi Vibe &nbsp;&nbsp; <strong>Decide</strong> · Vote with your crew &nbsp;&nbsp; <strong>Make it happen</strong> · See the group favorites</sub>
+</p>
 
 ## The idea
 
