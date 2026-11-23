@@ -94,14 +94,14 @@ The prototype prioritizes a complete shared flow over a broad feature set: creat
 | UI | React 19 + Tailwind CSS 4 | Fast product iteration and responsive styling |
 | Data | Supabase PostgreSQL | Persistent shared state and relational constraints |
 | Client/server integration | Supabase JS + `@supabase/ssr` | Server and browser clients |
-| Live synchronization | Supabase Realtime | Keep participants informed as the Moment changes |
+| Live synchronization | Proposed: Supabase Realtime | Future capability for instant updates across participants |
 | Critical domain operations | PostgreSQL functions (RPC) | Validate room access and voting rules close to the data |
 | Validation | Zod | Validate untrusted inputs at application boundaries |
 | Tests | Vitest | Exercise important domain behavior |
 
 ### Shared state and participant identity
 
-PostgreSQL is the source of truth. Realtime is used to notify connected clients that a Moment has changed; clients must rely on persisted state rather than treating a notification as proof that a write succeeded.
+PostgreSQL is the source of truth for room state, plans and votes. The current prototype relies on persisted data and application requests; **Supabase Realtime is a proposed enhancement, not an implemented capability**. If introduced, Realtime events should notify connected clients that a Moment has changed, while clients continue to rely on persisted state rather than treating a notification as proof that a write succeeded.
 
 The application uses temporary, browser-scoped visitor identity rather than requiring a full account. A visitor can return from the same browser profile and continue their participation. A shared room URL identifies the Moment, but it is not sufficient authorization to cast votes: server-side operations also validate the visitor identity and room membership.
 
@@ -252,7 +252,7 @@ Before a public launch, I would add broader browser-level end-to-end coverage, c
 - Live event, venue availability or reservation integrations.
 - Chat or messaging.
 - Payments.
-- Production content-management tools.
+- Production content-management tools (a mini CRM is a proposed next step).
 - Advanced personalization or recommendation models.
 - Large-scale load testing and production observability.
 
@@ -265,9 +265,10 @@ The prototype establishes a foundation, but a large public campaign would requir
 - **Security:** review Row Level Security policies and RPC permissions, protect invitation/session tokens, validate host ownership, rate-limit room creation and voting, and mitigate room enumeration and automated abuse.
 - **Concurrency:** add explicit idempotency keys where appropriate, test simultaneous submissions, and verify transactional behavior under contention.
 - **Performance:** inspect query plans and indexes, optimize result aggregation, cache stable catalog content and load-test database connection limits.
-- **Realtime reliability:** implement reconnect and missed-event recovery from PostgreSQL, monitor channel fan-out and define graceful behavior when live updates are unavailable.
-- **Operations:** add structured logs, error monitoring, metrics, backups, retention rules, and scheduled cleanup for expired rooms.
-- **Content and brand operations:** introduce editorial tooling, moderation, localization and a controlled process for refreshing Vibes and curated plans.
+- **Caching:** introduce a cache for frequently requested room and plan data to reduce repeated database reads and improve response times. Cache stable catalog data (plans and Vibes) more aggressively; use short TTLs, explicit invalidation or versioning for room data. Votes, membership checks and other correctness-sensitive operations must continue to use authoritative database state.
+- **Realtime collaboration (proposed):** add Supabase Realtime so participants see voting progress and Moment state changes without refreshing. Include reconnect handling and recovery from missed events by reloading persisted state. This is a future enhancement; the current prototype does not provide live synchronization.
+- **Logging and observability:** add structured application and server-side logs with correlation IDs for Moment/room operations, plus error monitoring and operational metrics. Avoid logging invite tokens, secrets or unnecessary participant data. Define retention and alerting before a public launch.
+- **Content operations (proposed mini CRM):** build an internal content manager so the team can create, edit, enable/disable and retire Pepsi Vibes and curated plan suggestions; associate plans with relevant Vibes and keep the public catalog current without code changes or deployments.
 
 The goal would be to scale the proven experience and its invariants, not prematurely introduce microservices or infrastructure without evidence that it is needed.
 
