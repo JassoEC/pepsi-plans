@@ -25,6 +25,21 @@ The goal is not to make Pepsi an ad placed next to the experience. Pepsi becomes
 
 The prototype uses curated sample experiences and illustrative imagery. It does not claim live venue availability or reservations.
 
+## Experience flow
+
+Pepsi acts as **The Insider**: it sets the mood, curates relevant experiences and gives the group a shared starting point. Friends make the decision together — Pepsi guides discovery, but never chooses the winner.
+
+```mermaid
+flowchart LR
+    A[Pepsi Vibes] --> B[Curated plans + Pepsi Insights]
+    B --> C[Shared Moment]
+    C --> D[Friends vote]
+    D --> E[Group decision]
+    P[Pepsi · The Insider] -. sets the mood .-> A
+    P -. adds context .-> B
+    P -. brings the experience together .-> C
+```
+
 ## How it works
 
 ### 1. Create a Moment
